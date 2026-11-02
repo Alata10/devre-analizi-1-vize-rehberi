@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Devre Analizi I — Tuna Göksu 4 Soruluk Bağımlı Kaynaklı Vize Kurtarma Portalı (Sıfırdan 100'e)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fffdf9;
+    --bg-soft: #f8f5ee;
+    --card: #ffffff;
+    --text: #0f172a;
+    --muted: #475569;
+    --border: #e2e8f0;
+    --indigo: #4f46e5;
+    --indigo-soft: #eef2ff;
+    --teal: #0d9488;
+    --teal-soft: #f0fdfa;
+    --rose: #e11d48;
+    --rose-soft: #fff1f2;
+    --amber: #d97706;
+    --amber-soft: #fffbeb;
+    --emerald: #059669;
+    --emerald-soft: #ecfdf5;
+    --purple: #7c3aed;
+    --purple-soft: #f5f3ff;
+    --shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.07), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.72;
+    font-size: 16.5px;
+    padding-bottom: 90px;
+  }
+
+  code, pre, .mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+  code {
+    background: #f1f5f9;
+    color: #be123c;
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-size: 0.92em;
+    font-weight: 700;
+    border: 1px solid #cbd5e1;
+  }
+
+  /* TOPBAR */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(255, 253, 249, 0.96);
+    backdrop-filter: blur(12px);
+    border-bottom: 2px solid #e2e8f0;
+    padding: 10px 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+  .topbar-inner {
+    max-width: 1220px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .brand {
+    font-weight: 800;
+    font-size: 1.02rem;
+    color: var(--indigo);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+  .brand-badge {
+    background: linear-gradient(135deg, #e11d48, #f97316);
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+  .nav-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .nav-pill {
+    text-decoration: none;
+    font-size: 0.81rem;
+    font-weight: 800;
+    padding: 6px 11px;
+    border-radius: 10px;
+    background: #f1f5f9;
+    color: #1e293b;
+    transition: all 0.18s;
+    border: 1px solid #cbd5e1;
+  }
+  .nav-pill:hover {
+    background: var(--indigo);
+    color: #fff;
+    border-color: var(--indigo);
+    transform: translateY(-1px);
+  }
+  .nav-pill.zero {
+    background: #fef3c7;
+    color: #92400e;
+    border-color: #f59e0b;
+  }
+  .nav-pill.hot {
+    background: #fff1f2;
+    color: #be123c;
+    border-color: #fda4af;
+  }
+
+  .container {
+    max-width: 1220px;
+    margin: 0 auto;
+    padding: 24px 16px;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #311042 100%);
+    color: #ffffff;
+    border-radius: 24px;
+    padding: 34px 30px;
+    margin-bottom: 28px;
+    box-shadow: 0 20px 45px -10px rgba(30, 27, 75, 0.35);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .hero-tag {
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fde68a;
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 5px 12px;
+    border-radius: 999px;
+  }
+  .hero h1 {
+    font-size: clamp(1.65rem, 3.2vw, 2.45rem);
+    font-weight: 800;
+    line-height: 1.22;
+    margin-bottom: 12px;
+  }
+  .hero p {
+    color: #e2e8f0;
+    font-size: 1.03rem;
+    max-width: 960px;
+    margin-bottom: 20px;
+  }
+
+  /* WHITEBOARD BOX */
+  .whiteboard-box {
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(251, 191, 36, 0.65);
+    border-radius: 18px;
+    padding: 20px;
+    margin-top: 16px;
+  }
+  .wb-title {
+    color: #fde047;
+    font-weight: 800;
+    font-size: 1.08rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .wb-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+  }
+  .wb-card {
+    background: rgba(15, 23, 42, 0.78);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 14px;
+    padding: 14px;
+    text-decoration: none;
+    color: #fff;
+    transition: all 0.2s;
+    display: block;
+  }
+  .wb-card:hover {
+    transform: translateY(-3px);
+    border-color: #fde047;
+    background: rgba(30, 41, 59, 0.95);
+  }
+  .wb-num {
+    display: inline-block;
+    background: #e11d48;
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.78rem;
+    padding: 2px 9px;
+    border-radius: 99px;
+    margin-bottom: 6px;
+  }
+  .wb-card h3 {
+    font-size: 1rem;
+    color: #fef08a;
+    margin-bottom: 5px;
+  }
+  .wb-card p {
+    font-size: 0.85rem;
+    color: #cbd5e1;
+    margin: 0;
+    line-height: 1.45;
+  }
+
+  /* QUICK ACTION BAR */
+  .quick-bar {
+    background: linear-gradient(135deg, #ecfdf5 0%, #eff6ff 100%);
+    border: 2px solid #10b981;
+    border-radius: 18px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .quick-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .q-btn {
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 0.9rem;
+    padding: 10px 16px;
+    border-radius: 12px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.18s;
+  }
+  .q-btn.primary {
+    background: #059669;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+  }
+  .q-btn.primary:hover { background: #047857; }
+  .q-btn.amber {
+    background: #d97706;
+    color: #fff;
+  }
+  .q-btn.indigo {
+    background: #4f46e5;
+    color: #fff;
+  }
+
+  /* SECTION HEADERS */
+  .section-block {
+    margin-bottom: 44px;
+    scroll-margin-top: 80px;
+  }
+  .sec-header {
+    background: #fff;
+    border: 2px solid var(--border);
+    border-left: 8px solid var(--indigo);
+    border-radius: 18px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .sec-header.amber { border-left-color: var(--amber); }
+  .sec-header.rose { border-left-color: var(--rose); }
+  .sec-header.teal { border-left-color: var(--teal); }
+  .sec-header.emerald { border-left-color: var(--emerald); }
+  .sec-header.purple { border-left-color: var(--purple); }
+
+  .sec-kicker {
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--indigo);
+    margin-bottom: 4px;
+  }
+  .sec-title {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 6px;
+  }
+  .sec-desc {
+    color: var(--muted);
+    font-size: 0.98rem;
+  }
+
+  /* CARDS & GRIDS */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+  }
+  .card h3 {
+    font-size: 1.18rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h4 {
+    font-size: 1.03rem;
+    font-weight: 800;
+    margin: 14px 0 8px 0;
+    color: #1e293b;
+  }
+
+  /* ELI5 / SIFIRDAN BOXES */
+  .eli5-box {
+    background: #fffbeb;
+    border: 2px solid #f59e0b;
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin: 14px 0;
+  }
+  .eli5-title {
+    font-weight: 800;
+    color: #b45309;
+    font-size: 1.02rem;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .danger-box {
+    background: #fff1f2;
+    border: 2px solid #f43f5e;
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin: 14px 0;
+  }
+  .danger-title {
+    font-weight: 800;
+    color: #be123c;
+    font-size: 1.02rem;
+    margin-bottom: 6px;
+  }
+  .recipe-box {
+    background: #f0fdfa;
+    border: 2px solid #0d9488;
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin: 14px 0;
+  }
+  .recipe-title {
+    font-weight: 800;
+    color: #0f766e;
+    font-size: 1.05rem;
+    margin-bottom: 8px;
+  }
+
+  /* STEP LIST */
+  .step-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 12px 0;
+  }
+  .step-item {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-left: 5px solid var(--indigo);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .step-badge {
+    display: inline-block;
+    background: var(--indigo);
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.76rem;
+    padding: 2px 9px;
+    border-radius: 6px;
+    margin-bottom: 5px;
+  }
+  .step-badge.rose { background: var(--rose); }
+  .step-badge.teal { background: var(--teal); }
+  .step-badge.amber { background: var(--amber); }
+  .step-badge.emerald { background: var(--emerald); }
+
+  /* FORMULA BLOCK */
+  .math-block {
+    background: #0f172a;
+    color: #f8fafc;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin: 10px 0;
+    font-size: 0.95rem;
+    overflow-x: auto;
+    border-left: 4px solid #38bdf8;
+    line-height: 1.65;
+  }
+  .math-hl { color: #fde047; font-weight: 800; }
+  .math-ok { color: #4ade80; font-weight: 800; }
+  .math-pink { color: #fb7185; font-weight: 800; }
+
+  /* SVG CIRCUIT WRAPPER */
+  .circuit-wrap {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 16px;
+    padding: 14px;
+    margin: 14px 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .circuit-caption {
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #475569;
+    margin-top: 6px;
+  }
+
+  /* TABLES */
+  table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 0.93rem;
+  }
+  table.data-table th, table.data-table td {
+    border: 1px solid #cbd5e1;
+    padding: 10px 12px;
+    text-align: left;
+  }
+  table.data-table th {
+    background: #f1f5f9;
+    font-weight: 800;
+    color: #0f172a;
+  }
+  table.data-table tr:nth-child(even) { background: #f8fafc; }
+
+  /* SIMULATORS */
+  .sim-panel {
+    background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%);
+    border: 2px solid #6366f1;
+    border-radius: 18px;
+    padding: 20px;
+    margin: 18px 0;
+  }
+  .sim-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    margin: 12px 0;
+  }
+  .sim-group {
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    padding: 10px 14px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 160px;
+  }
+  .sim-group label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #475569;
+  }
+  .sim-group input, .sim-group select {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 6px 8px;
+    border: 1px solid #94a3b8;
+    border-radius: 8px;
+  }
+
+  /* EXAM TABS & QUESTIONS */
+  .exam-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .exam-tab {
+    border: 2px solid #cbd5e1;
+    background: #fff;
+    color: #1e293b;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.92rem;
+    transition: all 0.18s;
+  }
+  .exam-tab.active {
+    background: var(--indigo);
+    color: #fff;
+    border-color: var(--indigo);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  }
+  .q-card {
+    background: #fff;
+    border: 2px solid #cbd5e1;
+    border-radius: 18px;
+    padding: 22px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .q-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .opt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 10px;
+    margin: 14px 0;
+  }
+  .opt-btn {
+    text-align: left;
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    padding: 12px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.94rem;
+    font-weight: 700;
+    color: #1e293b;
+    transition: all 0.15s;
+  }
+  .opt-btn:hover { border-color: var(--indigo); background: #eef2ff; }
+  .opt-btn.correct { background: #dcfce7; border-color: #16a34a; color: #14532d; }
+  .opt-btn.wrong { background: #ffe4e6; border-color: #e11d48; color: #881337; }
+
+  .sol-toggle-btn {
+    background: #1e293b;
+    color: #fff;
+    border: none;
+    padding: 9px 15px;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 0.86rem;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 6px;
+  }
+  .sol-box {
+    margin-top: 14px;
+    background: #f8fafc;
+    border: 2px solid #94a3b8;
+    border-radius: 14px;
+    padding: 18px;
+  }
+
+  @media (max-width: 768px) {
+    .hero { padding: 22px 18px; }
+    .card { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAVIGATION -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="#top" class="brand">
+      <span>⚡ DEVRE ANALİZİ I — TUNA GÖKSU VİZE</span>
+      <span class="brand-badge">4 SORU %100 BAĞIMLI KAYNAK</span>
+    </a>
+    <nav class="nav-pills">
+      <a href="#sifirdan" class="nav-pill zero">🛟 0. Sıfırdan Kurtarma</a>
+      <a href="#soru1" class="nav-pill hot">🎯 Soru 1: Max Güç & Thévenin</a>
+      <a href="#soru2" class="nav-pill">🔄 Soru 2: Kaynak Dön. & Süperpozisyon</a>
+      <a href="#soru3" class="nav-pill">📐 Soru 3: Düğüm & Çevre Analizi</a>
+      <a href="#soru4" class="nav-pill">🔋 Soru 4: Bölüm 1-2-3 Güç Hesabı</a>
+      <a href="#denemeler" class="nav-pill hot">✍️ 5 Vize Denemesi (20 Soru)</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container" id="top">
+
+  <!-- HERO & WHITEBOARD BREAKDOWN -->
+  <section class="hero">
+    <div class="hero-badge-row">
+      <span class="hero-tag">👨‍🏫 Prof. / Öğr. Üyesi: Tuna Göksu</span>
+      <span class="hero-tag">📌 Sınav Formatı: 4 Klasik Soru (Tümü Bağımlı Kaynaklı!)</span>
+      <span class="hero-tag">🛟 Hiç Çalışmamış Öğrenciye Sıfırdan Anlatım</span>
+    </div>
+    <h1>Devre Analizi I — Sıfırdan 100 Aldıran Kurtarma Kampı</h1>
+    <p>
+      Dersi hiç dinlememiş, temeli sıfır olan bir öğrencinin bile sınavdaki <strong>4 bağımlı kaynaklı soruyu</strong> adım adım, hiçbir işlem basamağı atlanmadan çözebilmesi için hazırlandı. Hoca tahtaya sınavda çıkacak <strong>4 sorunun konu başlığını</strong> ve hemen üstüne <strong>1. sorunun birebir çözümünü (Figure P4.87)</strong> yazdı!
+    </p>
+
+    <div class="whiteboard-box">
+      <div class="wb-title">📸 Sınıf Tahtasında Yazılan 4 Sınav Sorusu (Tıkla & Doğrudan O Sorunun Eğitimine Git)</div>
+      <div class="wb-grid">
+        <a href="#soru1" class="wb-card">
+          <span class="wb-num">SORU 1 (25 Puan)</span>
+          <h3>1- Maximum Güç Transferi</h3>
+          <p><strong>(Bağımlı kaynak içeren devrede)</strong> — Tahtada üstte çözülen <code>ek 1: vΔ = 110 - V1</code> sorusu (Figure P4.87) ve P4.88, P5.119, P5.117, P4.79 çözümleri.</p>
+        </a>
+        <a href="#soru2" class="wb-card">
+          <span class="wb-num">SORU 2 (25 Puan)</span>
+          <h3>2- Kaynak Dönüşümü veya Süperpozisyon</h3>
+          <p>Bağımlı kaynağı öldürmeden Süperpozisyon (P4.97, P4.98) ve kontrol değişkenini kaybetmeden Kaynak Dönüşümü (P4.56, P4.59, P4.60).</p>
+        </a>
+        <a href="#soru3" class="wb-card">
+          <span class="wb-num">SORU 3 (25 Puan)</span>
+          <h3>3- Düğüm Gerilimleri veya Çevre Akımları</h3>
+          <p>Bağımlı kaynaklı D.G.Y. (Çalışma Yaprağı 2 tüm devreler + Süperdüğüm) ve Ç.A.Y. (P4.42, P4.48, P4.52 Süperçevre).</p>
+        </a>
+        <a href="#soru4" class="wb-card">
+          <span class="wb-num">SORU 4 (25 Puan)</span>
+          <h3>4- 1, 2 ve 3. Bölümü İçeren Güç Sorusu</h3>
+          <p>KCL, KVL, Ohm Kanunu, Pasif İşaretleme Kuralı (Güç Alan <strong>P>0</strong> / Güç Veren <strong>P<0</strong>) ve <strong>∑P = 0</strong> Tellegen sağlaması (Fig 2.23, P2.9, P2.10, P2.32, P2.36, P2.37).</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUICK ACTION BAR -->
+  <div class="quick-bar">
+    <div>
+      <strong style="color:#065f46; font-size:1.03rem;">🚀 Nasıl Çalışmalısın?</strong>
+      <p style="font-size:0.9rem; color:#334155; margin-top:2px;">
+        Hiçbir şey bilmiyorsan önce <strong>Bölüm 0 (10 Dakikada Sıfırdan Kurtarma)</strong> kısmını oku, sonra 1'den 4'e kadar soruları incele ve en altta <strong>5 Vize Denemesini</strong> çöz!
+      </p>
+    </div>
+    <div class="quick-btns">
+      <a href="#sifirdan" class="q-btn amber">🛟 0'dan Başla (Hiç Bilmiyorum)</a>
+      <a href="#soru1" class="q-btn indigo">📸 Tahtadaki P4.87 Sorusuna Git</a>
+      <a href="#denemeler" onclick="setExamMode('interactive')" class="q-btn primary">✍️ 5 Vize Denemesini Çöz</a>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       BÖLÜM 0: HİÇ ÇALIŞMAMIŞ ÖĞRENCİ İÇİN SIFIRDAN KURTARMA KAMPI
+       ===================================================================== -->
+  <section class="section-block" id="sifirdan">
+    <div class="sec-header amber">
+      <div class="sec-kicker" style="color:var(--amber);">BÖLÜM 0 — HİÇBİR ŞEY BİLMEYENLER İÇİN 10 DAKİKADA TEMEL KURALLAR</div>
+      <h2 class="sec-title">🛟 "Hiç Çalışmadım, Ayvayı Yedim" Diyen Öğrencinin Kurtarma Rehberi</h2>
+      <p class="sec-desc">
+        Devre Analizi'nde öğrencilerin %90'ı formülü bilmediğinden değil, <strong>artı-eksi (<strong>+/-</strong>) işaretlerini</strong> ve <strong>baklava şeklindeki bağımlı kaynakları</strong> karıştırdığı için sıfır alır. Aşağıdaki 6 altın kuralı okuduğun an bütün sınavın şifresi çözülecek!
+      </p>
+    </div>
+
+    <div class="grid-2">
+      <!-- KURAL 1 -->
+      <div class="card">
+        <h3>💎 Kural 1: Yuvarlak (<strong>○</strong>) vs. Baklava (<strong>◇</strong>) Kaynak Nedir?</h3>
+        <p>Devrede iki çeşit kaynak görürsün:</p>
+        <ul style="margin:10px 0 10px 20px;">
+          <li><strong>Yuvarlak (<strong>○</strong>) = Bağımsız Kaynak:</strong> Değeri sabittir (mesela <strong>110 V</strong> veya <strong>5 A</strong>). Kimseye bağlı değildir.</li>
+          <li><strong>Baklava / Eşkenar Dörtgen (<strong>◇</strong>) = BAĞIMLI KAYNAK:</strong> Değeri devrenin başka bir yerindeki bir direncin gerilimine (<strong>v<sub>Δ</sub>, v<sub>x</sub></strong>) veya akımına (<strong>i<sub>Δ</sub>, i<sub>φ</sub>, i<sub>o</sub></strong>) bağlıdır!</li>
+        </ul>
+        <div class="eli5-box">
+          <div class="eli5-title">🧠 Aptala Anlatır Gibi: Baklavayı Nasıl Tanırım?</div>
+          <p style="font-size:0.93rem;">
+            • Baklavanın içinde <strong> <strong>+  /  -</strong> işareti varsa</strong> <strong>→</strong> O bir <strong>Gerilim Kaynağıdır (Volt)</strong>! Yanında <strong>3i<sub>Δ</sub></strong> yazsa bile sakın akım kaynağı sanma; içindeki <strong>+ / -</strong> onun gerilim kaynağı olduğunu söyler!<br>
+            • Baklavanın içinde <strong>OK (<strong>↑, ↓, →</strong>) varsa</strong> <strong>→</strong> O bir <strong>Akım Kaynağıdır (Amper)</strong>! Yanında <strong>0.1v<sub>Δ</sub></strong> yazsa bile içindeki ok onun akım kaynağı olduğunu söyler!
+          </p>
+        </div>
+        <div class="recipe-box">
+          <div class="recipe-title">🔥 Tuna Hoca'nın Tahtadaki "ek 1 / ek 2" Sırrı!</div>
+          <p style="font-size:0.92rem;">
+            Sınavda bağımlı kaynak gördüğün an <strong>İLK İŞİN</strong> kağıdın sağ üst köşesine <code>ek 1:</code> yazıp o bağımlı kaynağın harfini (<strong>v<sub>Δ</sub></strong> veya <strong>i<sub>Δ</sub></strong>) düğüm gerilimleri cinsinden yazmaktır:<br>
+            1) Bir direncin üstünde <strong>+  v<sub>Δ</sub>  -</strong> yazıyorsa: <strong><strong>v<sub>Δ</sub> = (Artı ucun düğümü) - (Eksi ucun düğümü)</strong></strong>.<br>
+            2) Bir direncin üstünde <strong>i<sub>Δ</sub> →</strong> oku varsa: <strong><strong>i<sub>Δ</sub> = \dfrac{(Okun başladığı düğüm) - (Okun gittiği düğüm)}{R}</strong></strong>.
+          </p>
+        </div>
+      </div>
+
+      <!-- KURAL 2 & 3 -->
+      <div class="card">
+        <h3>⚖️ Kural 2 & 3: Düğüm (KCL) ve Çevre (KVL) Nasıl Yazılır?</h3>
+        <h4>1. Kirchhoff'un Akımlar Kanunu (KCL — Düğüm Denklemi):</h4>
+        <p style="font-size:0.94rem;">
+          Bir kavşağa (düğüme) giren su miktarı, çıkan su miktarına eşittir. Tuna Hoca'nın Çalışma Yaprağı 1'deki kuralı:<br>
+          👉 <strong>Düğümden ÇIKAN akımlar <strong>(+)</strong>, düğüme GİREN akımlar <strong>(-)</strong> alınır, toplamı <strong>= 0</strong> yapılır!</strong>
+        </p>
+        <div class="math-block">
+          Düğüm V1'den R direnci üzerinden komşu V2'ye giden akım (ÇIKAN):<br>
+          <span class="math-hl">+(V1 - V2) / R</span><br>
+          Düğüm V1'e dışarıdan okla giren akım kaynağı (GİREN):<br>
+          <span class="math-pink">-I_kaynak</span>  (veya eşitliğin karşı tarafına +I_kaynak olarak at!)
+        </div>
+
+        <h4>2. Kirchhoff'un Gerilimler Kanunu (KVL — Çevre Denklemi):</h4>
+        <p style="font-size:0.94rem;">
+          Kapalı bir odanın (gözün) içinde saat yönünde yürürken:<br>
+          • Bir kaynağın <strong>önce <strong>(-)</strong> kutbuna</strong> çarparsan <code>-V</code>, <strong>önce <strong>(+)</strong> kutbuna</strong> çarparsan <code>+V</code> yaz.<br>
+          • Kendi odanın akımı <strong>I<sub>1</sub></strong>, yan odanın akımı <strong>I<sub>2</sub></strong> ise ortadaki ortak dirençten geçerken <code>+ R · (I1 - I2)</code> yaz, hepsini toplayıp <code>= 0</code> eşitle!
+        </p>
+      </div>
+    </div>
+
+    <!-- KURAL 4 & 5: GÜÇ SİMÜLATÖRÜ -->
+    <div class="card">
+      <h3>🔋 Kural 4: Güç Hesabı (<strong>P = V · I</strong>) — Eleman Güç Alıyor mu, Güç Veriyor mu? (4. Sorunun Kalbi!)</h3>
+      <p>
+        Çalışma Yaprağı 1 (Sayfa 2) ve Sınavın 4. Sorusunda her elemanın gücünü bulup <strong>"Güç alıyor (harcar)"</strong> veya <strong>"Güç veriyor (üretir)"</strong> demen istenecek. Bunu karıştırmamak için tek bir şeye bakacaksın:
+      </p>
+      <div class="grid-2" style="margin-top:12px;">
+        <div class="recipe-box" style="margin:0;">
+          <div class="recipe-title">✅ Durum A: Akım Oku <strong>(+)</strong> Kutuplu Uçtan GİRİYORSA</div>
+          <p style="font-size:0.93rem;">
+            Buna <strong>Pasif İşaretleme Kuralı</strong> denir. Formülün başına <strong>ARTI</strong> koyarsın:<br>
+            <code>P = + (V · I)</code><br>
+            *(Not: Dirençlerde akım her zaman <strong>+</strong> uçtan girer, bu yüzden dirençler <strong>HER ZAMAN GÜÇ ALIR / HARCAR</strong>: <strong>P<sub>R</sub> = +I² R = +V²/R > 0</strong>!)*
+          </p>
+        </div>
+        <div class="danger-box" style="margin:0;">
+          <div class="danger-title">⚡ Durum B: Akım Oku <strong>(+)</strong> Kutuplu Uçtan ÇIKIYORSA</div>
+          <p style="font-size:0.93rem;">
+            Yani akım <strong>(-)</strong> uçtan girip <strong>(+)</strong> uçtan çıkıyorsa formülün başına <strong>EKSİ</strong> koyarsın:<br>
+            <code>P = - (V · I)</code><br>
+            • Hesap sonucunda <strong><strong>P > 0</strong> (Pozitif)</strong> çıkarsa <strong>→</strong> <strong>GÜÇ ALIYOR (Harcar / Absorbs)</strong>.<br>
+            • Hesap sonucunda <strong><strong>P < 0</strong> (Negatif)</strong> çıkarsa <strong>→</strong> <strong>GÜÇ VERİYOR (Üretir / Delivers)</strong>.
+          </p>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE POWER SIMULATOR -->
+      <div class="sim-panel">
+        <h4 style="margin-top:0; color:#312e81;">🎛️ Canlı Pasif İşaretleme & Güç Yönü Simülatörü (Çalışma Yaprağı 1 — Soru 1.20 & 1.30 Test Edici)</h4>
+        <p style="font-size:0.9rem; color:#475569; margin-bottom:10px;">
+          Gerilim (<strong>V</strong>), Akım (<strong>I</strong>) değerlerini ve akımın giriş yönünü değiştirerek elemanın güç mü aldığını yoksa güç mü verdiğini canlı gör:
+        </p>
+        <div class="sim-controls">
+          <div class="sim-group">
+            <label>Gerilim Değeri V (Volt)</label>
+            <input type="number" id="simV" value="12" step="1" oninput="updatePowerSim()">
+          </div>
+          <div class="sim-group">
+            <label>Akım Değeri I (Amper)</label>
+            <input type="number" id="simI" value="-3" step="0.5" oninput="updatePowerSim()">
+          </div>
+          <div class="sim-group">
+            <label>Akım Okunun Yönü</label>
+            <select id="simDir" onchange="updatePowerSim()">
+              <option value="in_plus">(+) Kutuptan GİRİYOR (Pasif)</option>
+              <option value="out_plus">(+) Kutuptan ÇIKIYOR (Aktif)</option>
+            </select>
+          </div>
+        </div>
+        <div id="powerSimOutput" class="math-block" style="margin-top:10px;"></div>
+      </div>
+    </div>
+
+    <!-- KURAL 5: AÇIK DEVRE KISA DEVRE -->
+    <div class="card">
+      <h3>✂️ Kural 5: Açık Devre (<strong>V<sub>oc</sub> = V<sub>Th</sub></strong>) ve Kısa Devre (<strong>I<sub>sc</sub></strong>) Tuzakları (1. Sorunun Sırrı!)</h3>
+      <div class="grid-2">
+        <div class="step-item">
+          <span class="step-badge">AÇIK DEVRE (Tel Kopuk)</span>
+          <p style="font-size:0.93rem;">
+            • Kopuk bir telden <strong>AKIM GEÇMEZ (<strong>I = 0 A</strong>)</strong>!<br>
+            • <strong>Altın Tuzak:</strong> Eğer açık bir uçta tek başına seri duran bir direnç varsa, içinden akım geçmediği için (<strong>I=0</strong>) o direncin üzerinde <strong>hiç gerilim düşmez (<strong>V_R = 0· R = 0 V</strong>)</strong>! Yani arkadaki düğümün gerilimi neyse, açık ucun gerilimi (<strong>V<sub>Th</sub></strong>) birebir odur!
+          </p>
+        </div>
+        <div class="step-item">
+          <span class="step-badge rose">KISA DEVRE (Düz Tel Çekildi)</span>
+          <p style="font-size:0.93rem;">
+            • <strong>a</strong> ile <strong>b</strong> arasına düz tel çektiğin an o iki nokta aynı düğüm olur, yani <strong>gerilimi sıfırlanır (<strong>V<sub>ab</sub> = 0 V</strong>)</strong>!<br>
+            • <strong>Altın Tuzak:</strong> Eğer çektiğin kısa devre teline paralel bağlı tek bir direnç varsa, elektrik akımı dirençli yolu bırakıp düz telden akar; yani paralel direnç <strong>kısa devre olur (iptal olur)</strong>! Ama dalda kaynak varsa (<strong>3i<sub>Δ</sub></strong> gibi) o daldan akım akmaya devam eder!
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       BÖLÜM 1: SINAV SORUSU 1 — MAKSİMUM GÜÇ TRANSFERİ (BAĞIMLI KAYNAKLI)
+       ===================================================================== -->
+  <section class="section-block" id="soru1">
+    <div class="sec-header rose">
+      <div class="sec-kicker" style="color:var(--rose);">SINAV SORUSU 1 (25 PUAN) — TAHTADAKİ 1. MADDE & ÇÖZÜMÜ</div>
+      <h2 class="sec-title">🎯 Soru 1: Maksimum Güç Transferi (Bağımlı Kaynak İçeren Devrede)</h2>
+      <p class="sec-desc">
+        Tuna Hoca tahtada <strong>"1- Maximum güç transferi (bağımlı kaynak içeren devrede)"</strong> yazdı ve hemen üstünde Çalışma Yaprağı 3 & 4'teki <strong>Figure P4.87</strong> sorusunu çözdü! Önce şablonu öğrenelim, sonra tahtadaki soruyu ve diğer 4 adayı en ince detayına kadar çözelim.
+      </p>
+    </div>
+
+    <!-- YEMEK TARİFİ -->
+    <div class="card">
+      <h3>📋 Hiç Bilmeyen İçin 4 Adımda Maksimum Güç Transferi Çözüm Şablonu</h3>
+      <div class="step-list">
+        <div class="step-item">
+          <span class="step-badge">ADIM 1: Yük Direncini (<strong>R<sub>o</sub></strong> veya <strong>R<sub>L</sub></strong>) Sök!</span>
+          <p>Soruda <em>"<strong>R<sub>o</sub></strong> (veya <strong>R<sub>L</sub></strong>) direncine maksimum güç transfer edilebilmesi için..."</em> der. İlk işin o <strong>R<sub>o</sub></strong> direncini devreden söküp atmak ve boş kalan üst uca <strong><strong>a</strong></strong>, alt uca (toprağa) <strong><strong>b</strong></strong> yazmaktır.</p>
+        </div>
+        <div class="step-item">
+          <span class="step-badge teal">ADIM 2: Açık Devre Gerilimini Bul (<strong>V<sub>Th</sub> = V<sub>oc</sub></strong>)</span>
+          <p><strong>a-b</strong> uçları açıkken (oradan dışarı akım çıkmaz!) Düğüm Gerilimleri yöntemiyle <strong>a</strong> noktasının gerilimini hesapla. Bulduğun değer senin <strong>Thévenin Gerilimindir (<strong>V<sub>Th</sub></strong>)</strong>!</p>
+        </div>
+        <div class="step-item">
+          <span class="step-badge rose">ADIM 3: Kısa Devre Akımını Bul (<strong>I<sub>N</sub> = I<sub>sc</sub></strong>)</span>
+          <p>Şimdi <strong>a</strong> ile <strong>b</strong> arasına yukarıdan aşağıya düz bir tel çek ve üstüne <strong><strong>I<sub>sc</sub></strong></strong> (Kısa devre akımı) yaz (Tuna Hoca'nın tahtada çizdiği tel!). <strong>a</strong> ucu toprağa bağlandığı için <strong>a</strong> düğümünün gerilimi <strong>V<sub>a</sub> = 0 V</strong> olur! Yeniden düğüm denklemini çözüp o telden aşağı inen <strong>I<sub>sc</sub></strong> akımını bul.</p>
+        </div>
+        <div class="step-item">
+          <span class="step-badge emerald">ADIM 4: 3 Altın Formülü Yaz ve 25 Puanı Kap!</span>
+          <div class="math-block">
+            1) Thévenin Eşdeğer Direnci:   <span class="math-hl">R_Th = V_Th / I_sc</span>  (Ohm)<br>
+            2) Maksimum Güç İçin Yük:      <span class="math-ok">R<sub>o</sub> = R<sub>L</sub> = R_Th</span>    (Ohm)<br>
+            3) Transfer Edilen Max Güç:    <span class="math-pink">P_max = (V_Th)² / (4 · R_Th)</span>  (Watt)
+          </div>
+          <p style="font-size:0.9rem; color:#be123c; font-weight:700; margin-top:6px;">
+            ⚠️ DİKKAT: Devrede bağımlı kaynak varken <strong>R<sub>Th</sub></strong> bulmak için bağımsız kaynakları öldürüp eşdeğer direnç hesabı YAPAMAZSIN! Ya <strong>R<sub>Th</sub> = V<sub>Th</sub> / I<sub>sc</sub></strong> yapacaksın ya da dışarıdan Test Kaynağı (<strong>1 V</strong>) bağlayacaksın! Tuna Hoca tahtada <strong>V<sub>Th</sub> / I<sub>sc</sub></strong> yöntemini kullanıyor!
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAHTADAKİ BİREBİR SORU: FIGURE P4.87 -->
+    <div class="card" style="border: 3px solid #e11d48;">
+      <div style="background:#ffe4e6; color:#be123c; font-weight:800; padding:6px 14px; border-radius:99px; display:inline-block; font-size:0.82rem; margin-bottom:10px;">
+        📸 TAHTADA ÇÖZÜLEN BİREBİR SORU — FIGURE P4.87 (Çalışma Yaprağı 3 Sayfa 3 & Çalışma Yaprağı 4 Sayfa 1)
+      </div>
+      <h3>🔥 Örnek 1.1 (Figure P4.87): <strong>R<sub>o</sub></strong> Direncinin Değerini ve Maksimum Gücü Bulunuz</h3>
+
+      <!-- SVG FOR FIGURE P4.87 -->
+      <div class="circuit-wrap">
+        <svg viewBox="0 0 760 270" width="100%" style="max-width:740px; height:auto;">
+          <!-- Background grid subtle -->
+          <rect x="0" y="0" width="760" height="270" fill="#ffffff"/>
+          <!-- Wires -->
+          <line x1="70" y1="50" x2="140" y2="50" stroke="#0f172a" stroke-width="2.5"/>
+          <line x1="230" y1="50" x2="340" y2="50" stroke="#0f172a" stroke-width="2.5"/>
+          <line x1="430" y1="50" x2="640" y2="50" stroke="#0f172a" stroke-width="2.5"/>
+          <line x1="70" y1="220" x2="640" y2="220" stroke="#0f172a" stroke-width="2.5"/>
+
+          <!-- Left 110V Source -->
+          <line x1="70" y1="50" x2="70" y2="110" stroke="#0f172a" stroke-width="2.5"/>
+          <line x1="70" y1="160" x2="70" y2="220" stroke="#0f172a" stroke-width="2.5"/>
+          <circle cx="70" cy="135" r="24" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2.5"/>
+          <text x="70" y="130" text-anchor="middle" font-weight="800" font-size="16" fill="#1d4ed8">+</text>
+          <text x="70" y="148" text-anchor="middle" font-weight="800" font-size="18" fill="#1d4ed8">−</text>
+          <text x="22" y="140" font-weight="800" font-size="15" fill="#0f172a">110 V</text>
+
+          <!-- 15 Ohm Resistor -->
+          <rect x="140" y="36" width="90" height="28" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/>
+          <text x="185" y="55" text-anchor="middle" font-weight="800" font-size="14" fill="#92400e">15 Ω</text>
+          <text x="148" y="80" font-weight="800" font-size="14" fill="#0284c7">+   vΔ   −</text>
+
+          <!-- Node V1 -->
+          <circle cx="285" cy="50" r="5" fill="#e11d48"/>
+          <text x="285" y="35" text-anchor="middle" font-weight="800" font-size="15" fill="#e11d48">Düğüm V₁</text>
+          <line x1="285" y1="50" x2="285" y2="105" stroke="#0f172a" stroke-width="2.5"/>
+          <line x1="285" y1="165" x2="285" y2="220" stroke="#0f172a" stroke-width="2.5"/>
+          <!-- Diamond 0.1 v_delta (Current Source UP) -->
+          <polygon points="285,105 313,135 285,165 257,135" fill="#f0fdf4" stroke="#15803d" stroke-width="2.5"/>
+          <line x1="285" y1="152" x2="285" y2="118" stroke="#15803d" stroke-width="2.5"/>
+          <polygon points="285,115 279,125 291,125" fill="#15803d"/>
+          <text x="322" y="140" font-weight="800" font-size="14" fill="#15803d">0.1 vΔ</text>
+
+          <!-- 5 Ohm Resistor -->
+          <rect x="340" y="36" width="90" height="28" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/>
+          <text x="385" y="55" text-anchor="middle" font-weight="800" font-size="14" fill="#92400e">5 Ω</text>
+          <!-- i_delta arrow -->
+          <line x1="355" y1="76" x2="410" y2="76" stroke="#0284c7" stroke-width="2.5"/>
+          <polygon points="415,76 405,71 405,81" fill="#0284c7"/>
+          <text x="385" y="95" text-anchor="middle" font-weight="800" font-size="14" fill="#0284c7">iΔ</text>
+
+          <!-- Node V2 (Va) and 3*i_delta + 8 Ohm branch -->
+          <circle cx="500" cy="50" r="5" fill="#4f46e5"/>
+          <text x="500" y="35" text-anchor="middle" font-weight="800" font-size="15" fill="#4f46e5">Düğüm V₂ (Vₐ)</text>
+          <line x1="500" y1="50" x2="500" y2="80" stroke="#0f172a" stroke-width="2.5"/>
+          <polygon points="500,80 526,108 500,136 474,108" fill="#fff1f2" stroke="#be123c" stroke-width="2.5"/>
+          <text x="500" y="102" text-anchor="middle" font-weight="800" font-size="16" fill="#be123c">−</text>
+          <text x="500" y="125" text-anchor="middle" font-weight="800" font-size="15" fill="#be123c">+</text>
+          <text x="534" y="112" font-weight="800" font-size="14" fill="#be123c">3 iΔ</text>
+          <line x1="500" y1="136" x2="500" y2="155" stroke="#0f172a" stroke-width="2.5"/>
+          <rect x="486" y="155" width="28" height="45" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/>
+          <text x="532" y="182" font-weight="800" font-size="14" fill="#92400e">8 Ω</text>
+          <line x1="500" y1="200" x2="500" y2="220" stroke="#0f172a" stroke-width="2.5"/>
+
+          <!-- Output terminals a-b and Ro -->
+          <circle cx="640" cy="50" r="5" fill="#0f172a"/>
+          <text x="640" y="35" text-anchor="middle" font-weight="800" font-size="15" fill="#0f172a">a</text>
+          <circle cx="640" cy="220" r="5" fill="#0f172a"/>
+          <text x="640" y="242" text-anchor="middle" font-weight="800" font-size="15" fill="#0f172a">b (Toprak 0V)</text>
+          <line x1="640" y1="50" x2="640" y2="105" stroke="#059669" stroke-width="2.5" stroke-dasharray="5,4"/>
+          <rect x="626" y="105" width="28" height="60" rx="4" fill="#ecfdf5" stroke="#059669" stroke-width="2.5"/>
+          <text x="678" y="140" font-weight="800" font-size="15" fill="#059669">Rₒ (Yük)</text>
+          <line x1="640" y1="165" x2="640" y2="220" stroke="#059669" stroke-width="2.5" stroke-dasharray="5,4"/>
+        </svg>
+        <div class="circuit-caption">Şekil P4.87: Tahtada çözülen bağımlı kaynaklı (<strong>0.1v<sub>Δ</sub></strong> ve <strong>3i<sub>Δ</sub></strong>) Maksimum Güç Transferi devresi</div>
+      </div>
+
+      <div class="step-list">
+        <!-- HAZIRLIK -->
+        <div class="step-item">
+          <span class="step-badge amber">HAZIRLIK: Tahtadaki "ek 1" ve "ek 2" Yardımcı Denklemlerini Yazalım!</span>
+          <p>Devrede iki tane baklava (<strong>◇</strong>) var: biri <strong>0.1v<sub>Δ</sub></strong> (akım kaynağı), diğeri <strong>3i<sub>Δ</sub></strong> (gerilim kaynağı). Alt teli <strong>Toprak (<strong>0 V</strong>)</strong> seçelim. Soldaki <strong>110 V</strong> kaynağın üst ucu sabit <strong>110 V</strong>'tur. Ortadaki düğüme <strong>V<sub>1</sub></strong>, sağdaki çıkış düğümüne (<strong>a</strong> ucuna) <strong>V<sub>2</sub></strong> diyelim:</p>
+          <div class="math-block">
+            <span class="math-hl">ek 1 (vΔ nedir?):</span> 15 Ω direncin sol ucu (+) 110 V'ta, sağ ucu (−) V₁ düğümünde:<br>
+            👉 <strong>vΔ = 110 - V₁</strong>   (Tuna Hoca'nın tahtada sağ üstte yazdığı 1. satır!)<br><br>
+            <span class="math-hl">ek 2 (iΔ nedir?):</span> 5 Ω direncin içinden V₁'den V₂'ye doğru akan akım:<br>
+            👉 <strong>iΔ = (V₁ - V₂) / 5</strong>
+          </div>
+          <p style="font-size:0.9rem; color:#475569; margin-top:6px;">
+            <em>💡 Tahta Notu İpucu:</em> Hoca tahtada sağ üstte <code>ek 2: iΔ = (-3iΔ - V1)/5</code> yazarken, sağdaki dalda <strong>8 Ω</strong> direnç olmadan doğrudan <strong>3i<sub>Δ</sub></strong> kaynağının düğüme bağlandığı (<strong>V<sub>2</sub> = -3i<sub>Δ</sub></strong>) bir varyasyonu veya işaret tersliğini göstermişti. Biz aşağıda hem <strong>kitaptaki <strong>8 Ω</strong>'lu tam çözümü</strong> hem de <strong>tahtadaki <strong>8 Ω</strong>'suz (<strong>V<sub>2</sub> = -3i<sub>Δ</sub></strong>) varyasyonu</strong> ayrı ayrı veriyoruz ki sınavda hangisi gelirse gelsin tam puan al!
+          </p>
+        </div>
+
+        <!-- ADIM 1: VTH -->
+        <div class="step-item">
+          <span class="step-badge teal">BİRİNCİ AŞAMA: <strong>R<sub>o</sub></strong>'yu Sök ve Açık Devre Gerilimini (<strong>V<sub>Th</sub> = V<sub>2</sub></strong>) Bul!</span>
+          <p><strong>R<sub>o</sub></strong> direncini söktüğümüzde <strong>a-b</strong> uçları açık kalır. Şimdi <strong>V<sub>1</sub></strong> ve <strong>V<sub>2</sub></strong> düğümlerinde KCL (Düğümden çıkan akımlar toplamı <strong>= 0</strong>) yazalım:</p>
+          <div class="math-block">
+            <strong>1) Düğüm V₁ Denklemi:</strong><br>
+            • Sola (15 Ω üzerinden 110 V'a) giden akım: (V₁ - 110) / 15<br>
+            • Aşağıdan 0.1 vΔ akım kaynağı yukarı GİRİYOR (giren eksi alınır!): - 0.1 · vΔ<br>
+            • Sağa (5 Ω üzerinden V₂'ye) giden akım: (V₁ - V₂) / 5<br><br>
+            Denklem:  (V₁ - 110)/15  -  0.1·(110 - V₁)  +  (V₁ - V₂)/5  =  0<br>
+            Paydadan kurtulmak için her terimi 30 ile çarpalım:<br>
+            2(V₁ - 110) - 3(110 - V₁) + 6(V₁ - V₂) = 0<br>
+            2V₁ - 220 - 330 + 3V₁ + 6V₁ - 6V₂ = 0<br>
+            👉 <span class="math-hl">11 V₁ - 6 V₂ = 550</span>   (Denklem I)
+          </div>
+          <div class="math-block">
+            <strong>2) Düğüm V₂ Denklemi (Açık Devre):</strong><br>
+            • Sola (5 Ω üzerinden V₁'e) giden akım: (V₂ - V₁) / 5<br>
+            • Aşağıya (3iΔ ve 8 Ω dalından toprağa) giden akım: Dikkat! 3iΔ kaynağının üstü (−), altı (+) olduğu için aşağı inerken potansiyel 3iΔ kadar yükselir, yani akım: (V₂ - (-3iΔ)) / 8 = (V₂ + 3iΔ) / 8<br><br>
+            Denklem:  (V₂ - V₁)/5  +  (V₂ + 3iΔ)/8  =  0<br>
+            Burada ek 2'yi yani <code>iΔ = (V₁ - V₂)/5</code> yerine koyalım:<br>
+            (V₂ - V₁)/5  +  [ V₂ + 3(V₁ - V₂)/5 ] / 8  =  0<br>
+            Her terimi 40 ile çarpalım:<br>
+            8(V₂ - V₁) + 5V₂ + 3(V₁ - V₂) = 0<br>
+            8V₂ - 8V₁ + 5V₂ + 3V₁ - 3V₂ = 0  ⟹  -5V₁ + 10V₂ = 0  ⟹  <span class="math-ok">V₁ = 2 V₂</span>   (Denklem II)
+          </div>
+          <div class="math-block">
+            <strong>3) İki Denklemi Birleştirip V_Th'ı Bulalım:</strong><br>
+            Denklem I'de V₁ yerine <code>2 V₂</code> yazalım:<br>
+            11 · (2 V₂) - 6 V₂ = 550  ⟹  22 V₂ - 6 V₂ = 550  ⟹  16 V₂ = 550<br>
+            👉 <span class="math-hl">V_Th = V₂ = 550 / 16 = 275 / 8 = 34.375 V</span>   (ve V₁ = 68.75 V)
+          </div>
+        </div>
+
+        <!-- ADIM 2: ISC -->
+        <div class="step-item">
+          <span class="step-badge rose">İKİNCİ AŞAMA: <strong>a-b</strong> Arasına Kısa Devre Teli Çek ve <strong>I<sub>sc</sub></strong> Akımını Bul!</span>
+          <p>Tuna Hoca'nın tahtada çizdiği gibi <strong>a</strong> ile <strong>b</strong> arasına düz tel çekip üstüne <strong>I<sub>sc</sub></strong> yazıyoruz. Artık <strong>a</strong> düğümü doğrudan toprağa (<strong>0 V</strong>) bağlandığı için <strong><strong>V<sub>2</sub> = 0 V</strong></strong> oldu!</p>
+          <div class="math-block">
+            <strong>1) V₂ = 0 V iken Düğüm V₁ Denklemi:</strong><br>
+            Az önce bulduğumuz Denklem I'de (<code>11 V₁ - 6 V₂ = 550</code>) V₂ yerine 0 koyalım:<br>
+            11 V₁ - 6(0) = 550  ⟹  11 V₁ = 550  ⟹  <span class="math-ok">V₁ = 50 V</span> !<br><br>
+            <strong>2) V₁ = 50 V iken iΔ Akımı Kaç Amperdir?</strong><br>
+            iΔ = (V₁ - V₂) / 5 = (50 - 0) / 5 = <span class="math-hl">10 A</span> (Soldan sağa 5 Ω'dan a düğümüne 10 A geliyor!)<br><br>
+            <strong>3) 8 Ω ve 3iΔ Dalından Aşağı Kaç Amper Kaçıyor?</strong><br>
+            I_dal = (V₂ + 3iΔ) / 8 = (0 + 3 · 10) / 8 = 30 / 8 = <span class="math-pink">3.75 A</span><br><br>
+            <strong>4) a Düğümünden Kısa Devre Teline (I_sc) Giden Akım:</strong><br>
+            Soldan 10 A geldi, 3.75 A'i orta-sağ daldan aşağı indi, kalanı I_sc telinden iner:<br>
+            👉 <span class="math-ok">I_sc = 10 - 3.75 = 6.25 A  (25 / 4 A)</span>
+          </div>
+        </div>
+
+        <!-- ADIM 3: RTH VE PMAX -->
+        <div class="step-item">
+          <span class="step-badge emerald">ÜÇÜNCÜ AŞAMA: <strong>R<sub>Th</sub></strong>, <strong>R<sub>o</sub></strong> ve <strong>P<sub>max</sub></strong> Hesabı (Tam Puan!)</span>
+          <div class="math-block">
+            • <strong>R_Th</strong> = V_Th / I_sc = 34.375 / 6.25 = (275/8) / (25/4) = 11 / 2 = <span class="math-hl">5.5 Ω</span><br>
+            • Maksimum güç transferi için yük direnci: <span class="math-ok">R<sub>o</sub> = R_Th = 5.5 Ω</span><br>
+            • Maksimum Güç: <strong>P_max</strong> = (V_Th)² / (4 · R_Th) = (34.375)² / (4 · 5.5) = 1181.64 / 22 = <span class="math-pink">53.71 W</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE P4.87 CALCULATOR -->
+      <div class="sim-panel">
+        <h4 style="margin-top:0; color:#312e81;">🧮 Canlı P4.87 Sınav Sayı Değiştirici (Hoca Sınavda Kaynak Değerini Değiştirirse!)</h4>
+        <p style="font-size:0.9rem; color:#475569; margin-bottom:10px;">
+          Tuna Hoca sınavda aynı devreyi verip sadece <strong>110 V</strong> gerilim kaynağını (örn. <strong>220 V</strong> veya <strong>55 V</strong>) değiştirirse tüm ara adımların nasıl değiştiğini anında gör:
+        </p>
+        <div class="sim-controls">
+          <div class="sim-group">
+            <label>Sol Kaynak Gerilimi Vs (Volt)</label>
+            <input type="number" id="p487_Vs" value="110" step="10" oninput="calcP487()">
+          </div>
+          <div class="sim-group">
+            <label>Sol Üst Direnç R1 (Ω)</label>
+            <input type="number" id="p487_R1" value="15" step="1" oninput="calcP487()">
+          </div>
+          <div class="sim-group">
+            <label>Orta Direnç R2 (Ω)</label>
+            <input type="number" id="p487_R2" value="5" step="1" oninput="calcP487()">
+          </div>
+          <div class="sim-group">
+            <label>Sağ Dal Direnci R3 (Ω)</label>
+            <input type="number" id="p487_R3" value="8" step="1" oninput="calcP487()">
+          </div>
+        </div>
+        <div id="p487_Out" class="math-block"></div>
+      </div>
+    </div>
+
+    <!-- DİĞER SORU 1 ADAYLARI (P4.88, P5.119, P5.117, P4.79) -->
+    <div class="grid-2">
+      <!-- P4.88 -->
+      <div class="card">
+        <h3>⚡ Örnek 1.2 (Figure P4.88 — Çalışma Yaprağı 4 Sayfa 1): <strong>30i<sub>x</sub></strong> Bağımlı Kaynaklı Devre</h3>
+        <p style="font-size:0.92rem; color:var(--muted);">
+          <strong>Devre Özeti:</strong> Solda <strong>200 V</strong> kaynak, üstte <strong>25 Ω</strong>, ilk düğüm <strong>V<sub>1</sub></strong>'den toprağa <strong>100 Ω</strong>. <strong>V<sub>1</sub></strong>'den çıkış düğümü <strong>V<sub>a</sub></strong>'ya <strong>10 Ω</strong> direnç (<strong>i<sub>x</sub> →</strong>). <strong>V<sub>a</sub></strong>'dan toprağa <strong>20 Ω</strong> ve seri <strong>30i<sub>x</sub></strong> (<strong>+</strong> üstte, <strong>-</strong> altta) bağımlı gerilim kaynağı.
+        </p>
+        <div class="math-block">
+          <strong>1) Yardımcı Denklem (ek 1):</strong><br>
+          i<sub>x</sub> = (V₁ - Vₐ) / 10<br><br>
+          <strong>2) Açık Devre (Vₐ = V_Th):</strong><br>
+          • KCL (V₁): (V₁ - 200)/25 + V₁/100 + (V₁ - Vₐ)/10 = 0  (×100)<br>
+            ⟹ 4(V₁ - 200) + V₁ + 10(V₁ - Vₐ) = 0  ⟹  <span class="math-hl">15 V₁ - 10 Vₐ = 800</span><br>
+          • KCL (Vₐ): (Vₐ - V₁)/10 + (Vₐ - 30·i<sub>x</sub>)/20 = 0  (×20)<br>
+            ⟹ 2(Vₐ - V₁) + Vₐ - 3(V₁ - Vₐ) = 0  ⟹  -5 V₁ + 6 Vₐ = 0  ⟹  <span class="math-ok">V₁ = 1.2 Vₐ</span><br>
+          • Yerine koy: 15(1.2 Vₐ) - 10 Vₐ = 800  ⟹  8 Vₐ = 800  ⟹  <span class="math-hl">V_Th = 100 V</span> (ve V₁ = 120 V)<br><br>
+          <strong>3) Kısa Devre (Vₐ = 0 V ⟹ I_sc):</strong><br>
+          • 15 V₁ - 10(0) = 800  ⟹  V₁ = 160/3 = 53.33 V<br>
+          • i<sub>x</sub> = (160/3 - 0)/10 = 16/3 A (Soldan a'ya gelen)<br>
+          • Sağ daldan aşağı inen: (0 - 30·i<sub>x</sub>)/20 = -1.5 · (16/3) = -8 A (Yani aşağıdan yukarı 8 A çıkıyor!)<br>
+          • KCL (a düğümü): <span class="math-ok">I_sc = 16/3 - (-8) = 40/3 A (13.33 A)</span><br><br>
+          <strong>4) Sonuç:</strong><br>
+          • <span class="math-hl">R<sub>o</sub> = R_Th</span> = V_Th / I_sc = 100 / (40/3) = <span class="math-hl">7.5 Ω</span><br>
+          • <span class="math-pink">P_max</span> = 100² / (4 · 7.5) = 10000 / 30 = <span class="math-pink">333.33 W</span>
+        </div>
+      </div>
+
+      <!-- P5.119 -->
+      <div class="card">
+        <h3>⚡ Örnek 1.3 (Figure P5.119 — Çalışma Yaprağı 4 Sayfa 1 Sağ): <strong>4V<sub>x</sub></strong> Bağımlı Kaynaklı Devre</h3>
+        <p style="font-size:0.92rem; color:var(--muted);">
+          <strong>Devre Özeti:</strong> Sol kol <strong>100 V</strong> sabit kaynak. Orta düğüm <strong>V<sub>m</sub></strong>'ye soldan <strong>4 Ω</strong>, sağdan (<strong>V<sub>a</sub></strong>'ya) <strong>4 Ω</strong>, aşağıya <strong>4 Ω</strong> (<strong>+ V<sub>x</sub> -</strong>) ve seri <strong>20 V</strong> kaynak bağlı. Üst köprüde <strong>100 V</strong> düğümünden <strong>V<sub>a</sub></strong>'ya <strong>(-  +) 4V<sub>x</sub></strong> bağımlı kaynak ve seri <strong>4 Ω</strong> bağlı.
+        </p>
+        <div class="math-block">
+          <strong>1) Yardımcı Denklem (ek 1):</strong><br>
+          Orta dikey koldaki 4 Ω direncin üstü V<sub>m</sub>, altı 20 V kaynak olduğu için:<br>
+          👉 <span class="math-hl">V<sub>x</sub> = V<sub>m</sub> - 20</span><br>
+          Üst kolda 100 V üzerine (- +) 4V<sub>x</sub> eklendiği için üst kol potansiyeli: <code>100 + 4V<sub>x</sub></code>.<br><br>
+          <strong>2) Açık Devre (Vₐ = V_Th):</strong><br>
+          • KCL (V<sub>m</sub>): (V<sub>m</sub> - 100)/4 + (V<sub>m</sub> - 20)/4 + (V<sub>m</sub> - Vₐ)/4 = 0  ⟹  <span class="math-hl">3 V<sub>m</sub> - Vₐ = 120</span><br>
+          • KCL (Vₐ): (Vₐ - V<sub>m</sub>)/4 + [Vₐ - (100 + 4(V<sub>m</sub> - 20))]/4 = 0<br>
+            ⟹ Vₐ - V<sub>m</sub> + Vₐ - 4V<sub>m</sub> - 20 = 0  ⟹  <span class="math-ok">-5 V<sub>m</sub> + 2 Vₐ = 20</span><br>
+          • Çözüm: V<sub>m</sub> = 260 V  ve  <span class="math-hl">V_Th = Vₐ = 660 V</span> !<br><br>
+          <strong>3) Kısa Devre (Vₐ = 0 V ⟹ I_sc):</strong><br>
+          • 3 V<sub>m</sub> - 0 = 120  ⟹  V<sub>m</sub> = 40 V  ⟹  V<sub>x</sub> = 40 - 20 = 20 V.<br>
+          • Soldan gelen: (40 - 0)/4 = 10 A. Üstten gelen: (100 + 4·20 - 0)/4 = 180/4 = 45 A.<br>
+          • <span class="math-ok">I_sc = 10 + 45 = 55 A</span><br><br>
+          <strong>4) Sonuç:</strong><br>
+          • <span class="math-hl">R<sub>L</sub> = R_Th</span> = 660 / 55 = <span class="math-hl">12 Ω</span> (Tam sayı!)<br>
+          • <span class="math-pink">P_max</span> = 660² / (4 · 12) = <span class="math-pink">9075 W</span>
+        </div>
+      </div>
+
+      <!-- P5.117 -->
+      <div class="card">
+        <h3>⚡ Örnek 1.4 (Figure P5.117 — Çalışma Yaprağı 4 Sayfa 1 Sağ Alt): <strong>2I<sub>x</sub></strong> Bağımlı Kaynaklı Devre</h3>
+        <p style="font-size:0.92rem; color:var(--muted);">
+          <strong>Devre Özeti:</strong> <strong>R<sub>L</sub></strong> direnci içeride iki düğüm (<strong>V<sub>A</sub></strong> üst, <strong>V<sub>B</sub></strong> alt) arasında! Solda <strong>12 V</strong> ve <strong>4 kΩ</strong> (<strong>V<sub>A</sub></strong>'ya bağlı). Altta <strong>V<sub>B</sub></strong>'den toprağa <strong>6 kΩ</strong> (<strong>I<sub>x</sub> ↓</strong>) ve yukarı doğru <strong>2 mA</strong> kaynak. Sağda <strong>2I<sub>x</sub> ↑</strong> bağımlı akım kaynağı <strong>4 kΩ</strong> üzerinden doğrudan <strong>V<sub>A</sub></strong>'ya giriyor!
+        </p>
+        <div class="math-block">
+          <strong>1) Açık Devre (R<sub>L</sub> söküldü ⟹ V_Th = V<sub>A</sub> - V<sub>B</sub>):</strong><br>
+          • Düğüm V<sub>B</sub>'ye sadece 2 mA giriyor ve 6 kΩ'dan toprağa akıyor:<br>
+            I<sub>x</sub> = 2 mA  ve  <span class="math-ok">V<sub>B</sub> = 2 mA · 6 kΩ = 12 V</span> !<br>
+          • Düğüm V<sub>A</sub>'ya sağdan 2·I<sub>x</sub> = 4 mA giriyor, hepsi sol 4 kΩ üzerinden 12 V kaynağa gidiyor:<br>
+            (V<sub>A</sub> - 12) / 4k = 4 mA  ⟹  V<sub>A</sub> - 12 = 16  ⟹  <span class="math-ok">V<sub>A</sub> = 28 V</span> !<br>
+          • <span class="math-hl">V_Th = V<sub>A</sub> - V<sub>B</sub> = 28 - 12 = 16 V</span> !<br><br>
+          <strong>2) Kısa Devre (V<sub>A</sub> ve V<sub>B</sub> düz telle birleşti: V<sub>A</sub> = V<sub>B</sub> = V):</strong><br>
+          • Tek süperdüğüm KCL: (V - 12)/4 + V/6 - 2 - 2·(V/6) = 0  (mA ve kΩ)<br>
+          • (V - 12)/4 - V/6 = 2  ⟹  (3V - 36 - 2V)/12 = 2  ⟹  V = 60 V !<br>
+          • I<sub>x</sub> = 60 / 6 = 10 mA. Üst düğüm A'dan B'ye inen kısa devre akımı:<br>
+            I_sc = 2·I<sub>x</sub> - (V - 12)/4 = 20 - (60 - 12)/4 = 20 - 12 = <span class="math-ok">8 mA</span> !<br><br>
+          <strong>3) Sonuç:</strong><br>
+          • <span class="math-hl">R<sub>L</sub> = R_Th</span> = 16 V / 8 mA = <span class="math-hl">2 kΩ</span><br>
+          • <span class="math-pink">P_max</span> = 16² / (4 · 2 kΩ) = 256 / 8 = <span class="math-pink">32 mW</span>
+        </div>
+      </div>
+
+      <!-- P4.79 TEST SOURCE -->
+      <div class="card">
+        <h3>🧪 Örnek 1.5 (Figure P4.79 — ÇY3 Sayfa 3): Bağımsız Kaynak Yoksa Test Kaynağı Yöntemi!</h3>
+        <p style="font-size:0.92rem; color:var(--muted);">
+          <strong>Soru:</strong> Devrede HİÇ bağımsız kaynak yok! Sadece <strong>100 Ω</strong>, <strong>200 Ω</strong>, <strong>150 Ω</strong> (<strong>i<sub>Δ</sub> →</strong>), <strong>50 Ω</strong> ve <strong>250i<sub>Δ</sub></strong> (<strong>+</strong> üst, <strong>-</strong> alt) bağımlı kaynak var. <strong>a-b</strong> uçlarındaki Thévenin eşdeğerini bulunuz.
+        </p>
+        <div class="eli5-box" style="margin:8px 0;">
+          <div class="eli5-title">💡 Neden <strong>V<sub>Th</sub> / I<sub>sc</sub></strong> Burada Çalışmaz?</div>
+          <p style="font-size:0.88rem;">Çünkü devrede enerji veren bağımsız kaynak yoksa <strong>V<sub>Th</sub> = 0 V</strong> ve <strong>I<sub>sc</sub> = 0 A</strong> çıkar (<strong>0/0</strong> belirsizliği!). Bu durumda <strong>a-b</strong> uçlarına kendimiz <strong><strong>V<sub>t</sub> = 1 V</strong> Test Kaynağı</strong> bağlarız, kaynaktan çıkan <strong>I<sub>t</sub></strong> akımını bulup <strong>R<sub>Th</sub> = 1 / I<sub>t</sub></strong> yaparız!</p>
+        </div>
+        <div class="math-block">
+          • a-b uçlarına <strong>V<sub>t</sub> = 1 V</strong> bağlayalım (yani Vₐ = 1 V).<br>
+          • Sol üst düğüm V₁ olsun: <code>iΔ = (V₁ - 1) / 150</code>.<br>
+          • Orta düğümde 250 iΔ kaynağı olduğu için: <code>V₂ = 250 · iΔ</code>.<br>
+          • KCL (V₁): V₁/100 + (V₁ - 250 iΔ)/200 + iΔ = 0<br>
+            ⟹ (3/200) V₁ - (1/4) iΔ = 0  ⟹  9 V₁ = V₁ - 1  ⟹  <span class="math-ok">V₁ = -1/8 = -0.125 V</span><br>
+          • Buradan: iΔ = (-0.125 - 1)/150 = -0.0075 A (-7.5 mA)<br>
+          • V₂ = 250 · (-0.0075) = -1.875 V.<br>
+          • 1 V test kaynağından içeri giren toplam akım I<sub>t</sub>:<br>
+            I<sub>t</sub> = (1 - V₁)/150 + (1 - V₂)/50 = 0.0075 + (1 - (-1.875))/50 = 0.0075 + 0.0575 = <span class="math-hl">0.065 A (65 mA)</span><br>
+          • 👉 <span class="math-pink">R_Th = V<sub>t</sub> / I<sub>t</sub> = 1 / 0.065 = 200 / 13 ≈ 15.38 Ω</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       BÖLÜM 2: SINAV SORUSU 2 — KAYNAK DÖNÜŞÜMÜ VEYA SÜPERPOZİSYON
+       ===================================================================== -->
+  <section class="section-block" id="soru2">
+    <div class="sec-header teal">
+      <div class="sec-kicker" style="color:var(--teal);">SINAV SORUSU 2 (25 PUAN) — TAHTADAKİ 2. MADDE</div>
+      <h2 class="sec-title">🔄 Soru 2: Kaynak Dönüşümü veya Süperpozisyon (Bağımlı Kaynaklı)</h2>
+      <p class="sec-desc">
+        Tuna Hoca tahtaya <strong>"2- Kaynak dönüşümü veya süperpozisyon sorusu"</strong> yazdı ve tüm sınavın bağımlı kaynaklı olacağını söyledi. Bu soruda öğrencilerin %95'inin düştüğü <strong>2 büyük tuzak</strong> vardır. Önce bu iki tuzağı öğrenelim, ardından çalışma yapraklarındaki tüm soruları çözelim!
+      </p>
+    </div>
+
+    <!-- SÜPERPOZİSYON VE KAYNAK DÖNÜŞÜMÜ ALTIN KURALLAR -->
+    <div class="grid-2">
+      <div class="card">
+        <h3>⚡ A) Bağımlı Kaynaklı SÜPERPOZİSYON Nasıl Yapılır?</h3>
+        <div class="danger-box">
+          <div class="danger-title">🚨 ÖLÜMCÜL SINAV KURALI: Baklavalar (<strong>◇</strong>) ASLA Öldürülmez!</div>
+          <p style="font-size:0.93rem;">
+            Süperpozisyonda devrede kaç tane <strong>BAĞIMSIZ (Yuvarlak <strong>○</strong>)</strong> kaynak varsa o kadar adım yapılır.<br>
+            • Her adımda <strong>sadece 1 tane bağımsız kaynak</strong> açık bırakılır.<br>
+            • Diğer bağımsız <strong>Gerilim Kaynakları <strong>→</strong> Kısa Devre (Düz Tel)</strong> yapılır.<br>
+            • Diğer bağımsız <strong>Akım Kaynakları <strong>→</strong> Açık Devre (Kopuk Tel / Silinir)</strong> yapılır.<br>
+            • <strong>BAĞIMLI KAYNAKLARA (<strong>◇</strong>) KESİNLİKLE DOKUNULMAZ! Her adımda devrede aynen kalır!</strong><br>
+            • En sonda her adımda bulduğun sonuçları işaretleriyle toplarsın: <code>v<sub>o</sub> = v<sub>o</sub>1 + v<sub>o</sub>2</code>!
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🔁 B) Bağımlı Kaynaklı KAYNAK DÖNÜŞÜMÜ Nasıl Yapılır?</h3>
+        <div class="recipe-box">
+          <div class="recipe-title">📐 Seri Gerilim <strong>⟺</strong> Paralel Akım Dönüşümü</div>
+          <p style="font-size:0.93rem;">
+            • <strong>Seri bağlı</strong> bir gerilim kaynağı (<strong>V</strong>) ve direnç (<strong>R</strong>) gördüğünde onu <strong>paralel bağlı</strong> bir akım kaynağı (<strong>I = V/R</strong>) ve aynı direnç (<strong>R</strong>) yapabilirsin (veya tam tersi: <strong>V = I · R</strong>).<br>
+            • <strong>Yön Kuralı:</strong> Akım kaynağının oku her zaman gerilim kaynağının <strong><strong>(+)</strong> kutbunun baktığı tarafa</strong> bakar!<br>
+            • <strong>Bağımlı Kaynak Tuzağı:</strong> Bağımlı kaynağın kendisine bile dönüşüm yapabilirsin (<strong>0.4v<sub>a</sub> + 200 Ω ↔ 0.002v<sub>a</sub> ∥ 200 Ω</strong>), <strong>FAKAT bağımlı kaynağın kontrol değişkeninin (<strong>v<sub>a</sub>, v<sub>Δ</sub>, i<sub>x</sub></strong>) bulunduğu dirence DOKUNAMAZSIN!</strong> O dalı sabit tutup devrenin sağını ve solunu dönüştürerek ona doğru küçültürsün!
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SÜPERPOZİSYON ÇÖZÜMLÜ SORULAR (P4.97 & P4.98) -->
+    <div class="grid-2">
+      <!-- P4.97 -->
+      <div class="card" style="border:2px solid var(--teal);">
+        <h3>🌟 Örnek 2.1 (Figure P4.97 — ÇY3 s.4 & ÇY4 s.2): <strong>2.2 i<sub>φ</sub></strong> Bağımlı Kaynaklı Süperpozisyon</h3>
+        <div class="circuit-wrap">
+          <svg viewBox="0 0 560 220" width="100%" style="max-width:520px; height:auto;">
+            <!-- Top loop for 2.2 i_phi -->
+            <line x1="60" y1="90" x2="60" y2="35" stroke="#0f172a" stroke-width="2.2"/>
+            <line x1="60" y1="35" x2="215" y2="35" stroke="#0f172a" stroke-width="2.2"/>
+            <polygon points="215,35 245,15 275,35 245,55" fill="#f0fdf4" stroke="#15803d" stroke-width="2.2"/>
+            <line x1="227" y1="35" x2="262" y2="35" stroke="#15803d" stroke-width="2.2"/>
+            <polygon points="265,35 256,30 256,40" fill="#15803d"/>
+            <text x="245" y="12" text-anchor="middle" font-weight="800" font-size="13" fill="#15803d">2.2 iφ</text>
+            <line x1="275" y1="35" x2="430" y2="35" stroke="#0f172a" stroke-width="2.2"/>
+            <line x1="430" y1="35" x2="430" y2="90" stroke="#0f172a" stroke-width="2.2"/>
+            <!-- Main row -->
+            <line x1="60" y1="90" x2="120" y2="90" stroke="#0f172a" stroke-width="2.2"/>
+            <rect x="120" y="77" width="80" height="26" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="2.2"/>
+            <text x="160" y="95" text-anchor="middle" font-weight="800" font-size="13" fill="#92400e">4 kΩ</text>
+            <text x="160" y="118" text-anchor="middle" font-weight="800" font-size="13" fill="#0284c7">iφ →</text>
+            <line x1="200" y1="90" x2="480" y2="90" stroke="#0f172a" stroke-width="2.2"/>
+            <!-- Bottom wire -->
+            <line x1="60" y1="190" x2="480" y2="190" stroke="#0f172a" stroke-width="2.2"/>
+            <!-- 25V source -->
+            <line x1="60" y1="90" x2="60" y2="120" stroke="#0f172a" stroke-width="2.2"/>
+            <circle cx="60" cy="140" r="20" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2.2"/>
+            <text x="60" y="136" text-anchor="middle" font-weight="800" font-size="14" fill="#1d4ed8">+</text>
+            <text x="60" y="152" text-anchor="middle" font-weight="800" font-size="16" fill="#1d4ed8">−</text>
+            <text x="20" y="145" font-weight="800" font-size="13" fill="#0f172a">25 V</text>
+            <line x1="60" y1="160" x2="60" y2="190" stroke="#0f172a" stroke-width="2.2"/>
+            <!-- 5mA source -->
+            <line x1="275" y1="90" x2="275" y2="120" stroke="#0f172a" stroke-width="2.2"/>
+            <circle cx="275" cy="140" r="20" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2.2"/>
+            <line x1="275" y1="127" x2="275" y2="152" stroke="#1d4ed8" stroke-width="2.2"/>
+            <polygon points="275,155 270,146 280,146" fill="#1d4ed8"/>
+            <text x="302" y="145" font-weight="800" font-size="13" fill="#0f172a">5 mA</text>
+            <line x1="275" y1="160" x2="275" y2="190" stroke="#0f172a" stroke-width="2.2"/>
+            <!-- 20 kOhm resistor -->
+            <line x1="430" y1="90" x2="430" y2="115" stroke="#0f172a" stroke-width="2.2"/>
+            <rect x="417" y="115" width="26" height="50" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="2.2"/>
+            <text x="452" y="145" font-weight="800" font-size="13" fill="#92400e">20 kΩ (vₒ)</text>
+            <line x1="430" y1="165" x2="430" y2="190" stroke="#0f172a" stroke-width="2.2"/>
+          </svg>
+        </div>
+        <div class="math-block">
+          <strong>1. ADIM: Sadece 25 V Açık (5 mA Akım Kaynağı AÇIK DEVRE / Silindi!)</strong><br>
+          • 2.2 iφ bağımlı kaynağı DEVREDE KALIR!<br>
+          • Sağ düğüm gerilimine <code>v<sub>o</sub>1</code> diyelim. Sol düğüm 25 V'tur.<br>
+          • Yardımcı denklem (ek 1): <code>iφ' = (25 - v<sub>o</sub>1) / 4 kΩ</code><br>
+          • Sağ düğüm (v<sub>o</sub>1) KCL: Sağ düğüme soldan <code>iφ'</code>, üstten <code>2.2 iφ'</code> (toplam <code>3.2 iφ'</code>) giriyor, hepsi 20 kΩ'dan toprağa iniyor (çünkü 5 mA açık devre!):<br>
+            v<sub>o</sub>1 / 20k  -  3.2 · [ (25 - v<sub>o</sub>1) / 4k ]  =  0   (×20k ile çarpalım)<br>
+            v<sub>o</sub>1 - 16(25 - v<sub>o</sub>1) = 0  ⟹  17 v<sub>o</sub>1 = 400<br>
+            👉 <span class="math-hl">v<sub>o</sub>1 = 400 / 17 ≈ +23.53 V</span><br><br>
+          <strong>2. ADIM: Sadece 5 mA Açık (25 V Gerilim Kaynağı KISA DEVRE / 0 V!)</strong><br>
+          • Sol uç toprağa (0 V) bağlandı! Dolayısıyla: <code>iφ'' = (0 - v<sub>o</sub>2) / 4k = -v<sub>o</sub>2 / 4k</code>.<br>
+          • Sağ düğüm (v<sub>o</sub>2) KCL (5 mA aşağı çıkıyor):<br>
+            v<sub>o</sub>2 / 20k  +  5 mA  -  3.2 · (-v<sub>o</sub>2 / 4k)  =  0   (×20k ile çarpalım)<br>
+            v<sub>o</sub>2 + 100 + 16 v<sub>o</sub>2 = 0  ⟹  17 v<sub>o</sub>2 = -100<br>
+            👉 <span class="math-pink">v<sub>o</sub>2 = -100 / 17 ≈ -5.88 V</span><br><br>
+          <strong>3. ADIM: Süperpozisyon Toplamı:</strong><br>
+          👉 <span class="math-ok">v<sub>o</sub> = v<sub>o</sub>1 + v<sub>o</sub>2 = 400/17 - 100/17 = 300 / 17 ≈ 17.65 V</span>
+        </div>
+      </div>
+
+      <!-- P4.98 -->
+      <div class="card" style="border:2px solid var(--teal);">
+        <h3>🌟 Örnek 2.2 (Figure P4.98 — ÇY4 s.2): <strong>2.5 v<sub>b</sub></strong> Bağımlı Kaynaklı Süperpozisyon (Tam Sayı!)</h3>
+        <p style="font-size:0.92rem; color:var(--muted);">
+          <strong>Devre Özeti:</strong> Solda <strong>90 V</strong> bağımsız kaynak, sağda <strong>40 V</strong> bağımsız kaynak (altındaki <strong>2 kΩ</strong> ile seri). Üstte <strong>1 kΩ</strong> (<strong>+ v<sub>b</sub> -</strong>), ortada <strong>2 kΩ</strong> ve <strong>4 kΩ</strong>, orta dikey kolda <strong>2.5 v<sub>b</sub></strong> (<strong>+</strong> üst, <strong>-</strong> alt) bağımlı gerilim kaynağı (içinden aşağı inen <strong>i</strong> akımı soruluyor!).
+        </p>
+        <div class="math-block">
+          <strong>Hazırlık (Bağımlı Kaynak İlişkisi):</strong><br>
+          • Sol üst köşe gerilimi <strong>V_L</strong> (90 V veya 0 V), sağ üst düğüm gerilimi <strong>V<sub>2</sub></strong> olsun.<br>
+          • <code>ek 1: v<sub>b</sub> = V_L - V₂</code><br>
+          • Orta düğümde <strong>2.5 v<sub>b</sub></strong> gerilim kaynağı doğrudan toprağa bağlı olduğu için orta düğümün gerilimi: <code>V<sub>c</sub> = 2.5 v<sub>b</sub> = 2.5(V_L - V₂)</code>!<br>
+          • Orta koldan aşağı inen akım: <code>i = (V_L - V<sub>c</sub>)/2k + (V₂ - V<sub>c</sub>)/4k</code>.<br><br>
+          <strong>1. ADIM: Sadece 90 V Açık (40 V Kısa Devre ⟹ V_L = 90 V, V_R = 0 V):</strong><br>
+          • Sağ üst düğüm V₂'de KCL: (V₂ - 90)/1 + (V₂ - 2.5(90 - V₂))/4 + (V₂ - 0)/2 = 0  (×4)<br>
+            4(V₂ - 90) + 3.5 V₂ - 225 + 2 V₂ = 0  ⟹  9.5 V₂ = 585  ⟹  <span class="math-hl">V₂' = 1170 / 19 V</span><br>
+          • Buradan: v<sub>b</sub>' = 90 - 1170/19 = 540/19 V  ve  V<sub>c</sub>' = 1350/19 V.<br>
+          • 1. adımda orta koldan inen akım:<br>
+            👉 <span class="math-hl">i₁ = (90 - V<sub>c</sub>')/2 + (V₂' - V<sub>c</sub>')/4 = 135 / 19 mA ≈ 7.105 mA</span><br><br>
+          <strong>2. ADIM: Sadece 40 V Açık (90 V Kısa Devre ⟹ V_L = 0 V, V_R = 40 V):</strong><br>
+          • v<sub>b</sub>'' = 0 - V₂'' = -V₂''  ve  V<sub>c</sub>'' = -2.5 V₂''.<br>
+          • Sağ üst düğüm V₂'' KCL: (V₂'' - 0)/1 + (V₂'' - (-2.5 V₂''))/4 + (V₂'' - 40)/2 = 0  (×4)<br>
+            4 V₂'' + 3.5 V₂'' + 2 V₂'' - 80 = 0  ⟹  9.5 V₂'' = 80  ⟹  <span class="math-pink">V₂'' = 160 / 19 V</span><br>
+          • Buradan V<sub>c</sub>'' = -400/19 V ve 2. adımda orta koldan inen akım:<br>
+            👉 <span class="math-pink">i₂ = (0 - V<sub>c</sub>'')/2 + (V₂'' - V<sub>c</sub>'')/4 = 340 / 19 mA ≈ 17.895 mA</span><br><br>
+          <strong>3. ADIM: Süperpozisyon Toplamı (Mucize Tam Sayı!):</strong><br>
+          👉 <span class="math-ok">i = i₁ + i₂ = 135/19 + 340/19 = 475 / 19 = 25 mA !</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KAYNAK DÖNÜŞÜMÜ ÇÖZÜMLÜ SORULAR (P4.56, P4.59, P4.60) -->
+    <div class="grid-2">
+      <!-- P4.56 -->
+      <div class="card">
+        <h3>🔁 Örnek 2.3 (Figure P4.56 — ÇY3 Sayfa 2): Bağımlı Kaynaklı Kaynak Dönüşümü</h3>
+        <p style="font-size:0.92rem; color:var(--muted);">
+          <strong>Soru:</strong> Solda <strong>20 V</strong> (<strong>-</strong> sol, <strong>+</strong> sağ) ve seri <strong>100 Ω</strong>. İlk düğümde <strong>250 Ω</strong> (<strong>+ v<sub>a</sub> -</strong>). Ortada paralel <strong>200 mA</strong> (<strong>←</strong>) ve <strong>0.003 v<sub>Δ</sub></strong> (<strong>→</strong>). İkinci düğümde <strong>500 Ω</strong> (<strong>+ v<sub>Δ</sub> -</strong>). En sağda <strong>(-  +) 0.4 v<sub>a</sub></strong> bağımlı gerilim kaynağı ve seri <strong>200 Ω</strong>!
+        </p>
+        <div class="math-block">
+          <strong>1) Hangi Dallara Dokunulmaz?</strong><br>
+          <strong>250 Ω</strong> (<strong>v<sub>a</sub></strong>) ve <strong>500 Ω</strong> (<strong>v<sub>Δ</sub></strong>) kontrol değişkeni olduğu için onlara DOKUNMA! Ama en sol ve en sağ dalları kaynak dönüşümüyle akım kaynağına çevir:<br><br>
+          <strong>2) Sol Dal Dönüşümü:</strong><br>
+          • 20 V (+ sağda) ve seri 100 Ω  ⟹  Yukarı bakan <code>20 / 100 = 0.2 A</code> akım kaynağı ∥ 100 Ω !<br>
+          • 100 Ω ile 250 Ω paralel oldu: <code>R_sol = (100 · 250) / 350 = 500 / 7 Ω</code>.<br><br>
+          <strong>3) Sağ Dal Dönüşümü (Bağımlı Kaynağı Dönüştürüyoruz!):</strong><br>
+          • 0.4 vₐ (+ solda) ve seri 200 Ω  ⟹  Yukarı bakan <code>0.4 vₐ / 200 = 0.002 vₐ</code> bağımlı akım kaynağı ∥ 200 Ω !<br>
+          • 500 Ω ile 200 Ω paralel oldu: <code>R_sağ = (500 · 200) / 700 = 1000 / 7 Ω</code>.<br><br>
+          <strong>4) İki Düğümde Tek Satırlık KCL:</strong><br>
+          • Sol Düğüm (vₐ): vₐ / (500/7) = 0.2 + 0.2 - 0.003 vΔ  ⟹  <span class="math-hl">7 vₐ + 1.5 vΔ = 200</span><br>
+          • Sağ Düğüm (vΔ): vΔ / (1000/7) = -0.2 + 0.003 vΔ + 0.002 vₐ  ⟹  <span class="math-ok">vₐ - 2 vΔ = 100</span><br>
+          • Çözüm: <span class="math-hl">vΔ = -1000/31 ≈ -32.26 V</span>  ve  <span class="math-ok">vₐ = 1100/31 ≈ +35.48 V</span>
+        </div>
+      </div>
+
+      <!-- P4.59 & P4.60 -->
+      <div class="card">
+        <h3>🔁 Örnek 2.4 (Figure P4.59 & P4.60 — ÇY3 Sayfa 2): Merdiven Kaynak Dönüşümü</h3>
+        <div class="math-block">
+          <strong>📌 Figure P4.59 (Soldan Sağa Adım Adım Eritme):</strong><br>
+          1) En soldaki <code>8 mA (↑) ∥ 5 kΩ</code>  ⟹  <code>40 V (+ üstte) + seri 5 kΩ</code>.<br>
+          2) Yanındaki <code>10 kΩ</code> ve <code>(- +) 35 V</code> ile seri topla:<br>
+             Direnç: <code>5 + 10 = 15 kΩ</code>. Gerilim (ikisi de aynı yönde iter): <code>40 + 35 = 75 V (+ üstte)</code>!<br>
+          3) <code>75 V + seri 15 kΩ</code>  ⟹  <code>75 / 15 = 5 mA (↑) ∥ 15 kΩ</code>.<br>
+          4) Ortadaki <code>30 kΩ</code> ile paralel birleştir: <code>15 kΩ ∥ 30 kΩ = 10 kΩ</code>.<br>
+          5) <code>5 mA (↑) ∥ 10 kΩ</code>  ⟹  <code>50 V (+ üstte) + seri 10 kΩ</code>.<br>
+          6) Üstteki <code>15 kΩ</code> ile seri topla: <code>10 + 15 = 25 kΩ</code> (ve 50 V).<br>
+          7) Tekrar akım kaynağına çevir: <code>50 V / 25 kΩ = 2 mA (↑) ∥ 25 kΩ</code>.<br>
+          8) En sağda: <code>2 mA (↑) - 1 mA (↓) = 1 mA (↑)</code> ve <code>25 kΩ ∥ 25 kΩ = 12.5 kΩ</code>.<br>
+          👉 <span class="math-ok">v<sub>o</sub> = 1 mA · 12.5 kΩ = 12.5 V !</span><br><br>
+          <strong>📌 Figure P4.60 (Özet Çözüm):</strong><br>
+          <code>50V+10kΩ → 5mA∥10kΩ → ∥15kΩ=6kΩ → 30V+6kΩ → +3kΩ+6kΩ=15kΩ → 2mA∥15kΩ → -1mA=1mA∥15kΩ → 15V+15kΩ → +5kΩ=20kΩ → 0.75mA∥20kΩ → ∥20kΩ=10kΩ</code>.<br>
+          👉 Akım bölme ile: <span class="math-hl">i<sub>o</sub> = 0.75 mA · [10 / (10 + 15)] = 0.3 mA !</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       BÖLÜM 3: SINAV SORUSU 3 — DÜĞÜM GERİLİMLERİ VEYA ÇEVRE AKIMLARI
+       ===================================================================== -->
+  <section class="section-block" id="soru3">
+    <div class="sec-header">
+      <div class="sec-kicker">SINAV SORUSU 3 (25 PUAN) — TAHTADAKİ 3. MADDE</div>
+      <h2 class="sec-title">📐 Soru 3: Analiz Sorusu — Düğüm Gerilimleri veya Çevre Akımları</h2>
+      <p class="sec-desc">
+        Tuna Hoca tahtaya <strong>"3- Analiz sorusu, düğüm gerilimleri veya çevre akımları"</strong> yazdı. Çalışma Yaprağı 2 (Düğüm Gerilimleri) ve Çalışma Yaprağı 3 Sayfa 1'deki (Çevre Akımları) bağımlı kaynaklı ve Süperdüğüm/Süperçevre içeren en kritik soruları sıfırdan çözüyoruz!
+      </p>
+    </div>
+
+    <!-- SÜPERDÜĞÜM VE SÜPERÇEVRE ÖZETİ -->
+    <div class="grid-2">
+      <div class="eli5-box" style="margin:0;">
+        <div class="eli5-title">🌐 SÜPERDÜĞÜM (Supernode) Nedir, Ne Zaman Yapılır?</div>
+        <p style="font-size:0.92rem;">
+          <strong>Düğüm Gerilimleri</strong> çözerken iki düğümün (<strong>V<sub>1</sub></strong> ve <strong>V<sub>2</sub></strong>) arasında dirençsiz <strong>tek başına bir Gerilim Kaynağı (bağımsız veya <strong>◇</strong> bağımlı!)</strong> varsa:<br>
+          1) O gerilim kaynağını iki düğümle birlikte büyük bir balonun içine al (<strong>Süperdüğüm</strong>).<br>
+          2) <strong>1. Denklem (KCL):</strong> Balonun dış sınırından çıkan tüm direnç/kaynak akımlarını toplayıp <strong>= 0</strong> yap.<br>
+          3) <strong>2. Denklem (Gerilim Farkı):</strong> Kaynağın <strong>(+)</strong> ucundaki düğümden <strong>(-)</strong> ucundaki düğümü çıkarıp kaynak değerine eşitle: <code>V_(+) - V_(-) = V_kaynak</code>!
+        </p>
+      </div>
+      <div class="recipe-box" style="margin:0;">
+        <div class="recipe-title">🔄 SÜPERÇEVRE (Supermesh) Nedir, Ne Zaman Yapılır?</div>
+        <p style="font-size:0.92rem;">
+          <strong>Çevre Akımları</strong> çözerken iki komşu gözün (<strong>I<sub>1</sub></strong> ve <strong>I<sub>2</sub></strong>) ortak duvarında <strong>bir Akım Kaynağı (bağımsız veya <strong>◇</strong> bağımlı!)</strong> varsa:<br>
+          1) Ortadaki o akım kaynağını silגיp iki odayı birleştirerek <strong>Büyük Çevre (Süperçevre)</strong> etrafında tek bir KVL denklemi yaz!<br>
+          2) <strong>Yardımcı Denklem:</strong> Ortadaki akım kaynağının oku hangi çevre akımıyla aynı yöndeyse ondan diğerini çıkar: <code>I_aynı_yön - I<sub>t</sub>ers_yön = I_kaynak</code>!
+        </p>
+      </div>
+    </div>
+
+    <!-- ÇALIŞMA YAPRAĞI 2: DÜĞÜM GERİLİMLERİ ÇÖZÜMLERİ -->
+    <div class="grid-2" style="margin-top:18px;">
+      <!-- ÇY2 S2 DEVRE 1 -->
+      <div class="card">
+        <h3>📌 Örnek 3.1 (ÇY2 Sayfa 2, 1. Devre): <strong>5i<sub>Δ</sub></strong> Bağımlı Kaynaklı Düğüm Analizi</h3>
+        <p style="font-size:0.92rem; color:var(--muted);">
+          <strong>Devre:</strong> Solda <strong>3 A (↑)</strong> kaynak, paralel <strong>200 Ω</strong> (<strong>+ v<sub>o</sub> -</strong>). Orta dikey kolda <strong>10 Ω</strong> ve seri <strong>(-  +) 5i<sub>Δ</sub></strong> bağımlı gerilim kaynağı. Üst sağda <strong>20 Ω</strong> (<strong>i<sub>Δ</sub> →</strong>) ve en sağda <strong>80 V</strong> (<strong>+</strong> üstte) kaynak.
+        </p>
+        <div class="math-block">
+          <strong>1) Düğümleri ve Ek Denklemi Belirle:</strong><br>
+          • Sağdaki 80 V kaynak doğrudan toprağa bağlı olduğu için sağ üst düğüm = <code>80 V</code>!<br>
+          • Sol/orta üst düğüm tek bir düğümdür, adı <code>V₁ = v<sub>o</sub></code> olsun.<br>
+          • <code>ek 1:</code> 20 Ω dirençte ok soldan sağa (V₁'den 80 V'a) gittiği için:<br>
+            👉 <span class="math-hl">iΔ = (V₁ - 80) / 20</span><br><br>
+          <strong>2) Düğüm V₁'de KCL Yazalım:</strong><br>
+          • 3 A kaynak düğüme GİRİYOR: <code>-3</code><br>
+          • 200 Ω'dan aşağı ÇIKIYOR: <code>+ V₁ / 200</code><br>
+          • Orta koldan (10 Ω ve 5iΔ, üstü − altı +) aşağı ÇIKIYOR: <code>+ (V₁ + 5iΔ) / 10</code><br>
+          • 20 Ω'dan sağa ÇIKIYOR: <code>+ (V₁ - 80) / 20</code><br><br>
+          Hepsini toplayıp <code>iΔ = (V₁ - 80)/20</code> yerine koyalım:<br>
+          -3  +  V₁/200  +  [ V₁ + 5(V₁ - 80)/20 ] / 10  +  (V₁ - 80)/20  =  0<br>
+          Her terimi 200 ile çarpalım:<br>
+          -600 + V₁ + 20 V₁ + 5(V₁ - 80) + 10(V₁ - 80) = 0<br>
+          36 V₁ - 1800 = 0  ⟹  <span class="math-ok">v<sub>o</sub> = V₁ = 50 V</span>  ve  <span class="math-hl">iΔ = (50 - 80)/20 = -1.5 A</span> !
+        </div>
+      </div>
+
+      <!-- ÇY2 S2 DEVRE 3 -->
+      <div class="card">
+        <h3>📌 Örnek 3.2 (ÇY2 Sayfa 2, 3. Devre): <strong>v<sub>Δ</sub> / 750</strong> Bağımlı Kaynaklı Düğüm Analizi</h3>
+        <p style="font-size:0.92rem; color:var(--muted);">
+          <strong>Devre:</strong> Solda <strong>50 V</strong> kaynak, seri <strong>500 Ω</strong>. 1. düğümde <strong>1 kΩ</strong> (<strong>+ v<sub>Δ</sub> -</strong>). İki düğüm arasında <strong>2 kΩ</strong>. 2. düğümde yukarı bakan <strong>(v<sub>Δ</sub>) / (750)</strong> bağımlı akım kaynağı ve paralel <strong>200 Ω</strong> (<strong>+ v<sub>o</sub> -</strong>).
+        </p>
+        <div class="math-block">
+          <strong>1) Düğüm İsimleri:</strong><br>
+          • 1. düğümün gerilimi doğrudan <code>vΔ</code>, 2. düğümün gerilimi doğrudan <code>v<sub>o</sub></code>'dır!<br><br>
+          <strong>2) 1. Düğüm (vΔ) KCL Denklemi:</strong><br>
+          (vΔ - 50)/500  +  vΔ/1000  +  (vΔ - v<sub>o</sub>)/2000  =  0   (×2000 ile çarpalım)<br>
+          4(vΔ - 50) + 2 vΔ + vΔ - v<sub>o</sub> = 0  ⟹  <span class="math-hl">7 vΔ - v<sub>o</sub> = 200</span>   (Denklem I)<br><br>
+          <strong>3) 2. Düğüm (v<sub>o</sub>) KCL Denklemi:</strong><br>
+          (v<sub>o</sub> - vΔ)/2000  -  vΔ/750  +  v<sub>o</sub>/200  =  0   (×6000 ile çarpalım)<br>
+          3(v<sub>o</sub> - vΔ) - 8 vΔ + 30 v<sub>o</sub> = 0  ⟹  -11 vΔ + 33 v<sub>o</sub> = 0  ⟹  <span class="math-ok">vΔ = 3 v<sub>o</sub></span>   (Denklem II)<br><br>
+          <strong>4) Çözüm:</strong><br>
+          7(3 v<sub>o</sub>) - v<sub>o</sub> = 200  ⟹  20 v<sub>o</sub> = 200  ⟹  <span class="math-ok">v<sub>o</sub> = 10 V</span>  ve  <span class="math-hl">vΔ = 30 V</span> !
+        </div>
+      </div>
+
+      <!-- ÇY2 S2 DEVRE 5 (BAĞIMLI SÜPERDÜĞÜM) -->
+      <div class="card">
+        <h3>📌 Örnek 3.3 (ÇY2 Sayfa 2, 5. Devre): <strong>5v<sub>Δ</sub></strong> Bağımlı Kaynaklı SÜPERDÜĞÜM!</h3>
+        <p style="font-size:0.92rem; color:var(--muted);">
+          <strong>Devre:</strong> Solda <strong>15 V</strong> kaynak (paralelindeki <strong>33 Ω</strong> doğrudan <strong>15 V</strong>'a bağlıdır, düğüm denklemini etkilemez!). <strong>15 V</strong>'tan <strong>10 Ω</strong> ile 1. düğüme (<strong>2 Ω</strong> üzerinde <strong>+ v<sub>Δ</sub> -</strong>) gelinir. 1. düğüm ile 2. düğüm (<strong>v<sub>o</sub></strong>) arasında <strong>(+  -) 5v<sub>Δ</sub></strong> bağımlı gerilim kaynağı vardır! Sağda <strong>20 Ω ∥ 40 Ω</strong> dirençler bağlıdır.
+        </p>
+        <div class="math-block">
+          <strong>1) Süperdüğüm İç Denklemi (Gerilim Farkı):</strong><br>
+          1. düğüm (<strong>v<sub>Δ</sub></strong>) ile 2. düğüm (<strong>v<sub>o</sub></strong>) arasında <strong>(+  -) 5v<sub>Δ</sub></strong> gerilim kaynağı olduğu için:<br>
+          vΔ - v<sub>o</sub> = 5 vΔ  ⟹  <span class="math-hl">v<sub>o</sub> = -4 vΔ</span>   (Denklem I)<br><br>
+          <strong>2) Süperdüğüm Dış KCL Denklemi (İki Düğümü Tek Paket Yap!):</strong><br>
+          (vΔ - 15)/10  +  vΔ/2  +  v<sub>o</sub>/20  +  v<sub>o</sub>/40  =  0   (×40 ile çarpalım)<br>
+          4(vΔ - 15) + 20 vΔ + 2 v<sub>o</sub> + v<sub>o</sub> = 0  ⟹  <span class="math-ok">24 vΔ + 3 v<sub>o</sub> = 60</span>   (Denklem II)<br><br>
+          <strong>3) Çözüm:</strong><br>
+          v<sub>o</sub> yerine <code>-4 vΔ</code> koyalım: 24 vΔ + 3(-4 vΔ) = 60  ⟹  12 vΔ = 60<br>
+          👉 <span class="math-hl">vΔ = 5 V</span>  ve  <span class="math-pink">v<sub>o</sub> = -4 · 5 = -20 V</span> !
+        </div>
+      </div>
+
+      <!-- ÇEVRE AKIMLARI: P4.48 & P4.42 -->
+      <div class="card">
+        <h3>📌 Örnek 3.4 (Figure P4.48 & P4.42 — ÇY3 Sayfa 1): Bağımlı Kaynaklı Çevre Akımları (Ç.A.Y.)</h3>
+        <div class="math-block">
+          <strong>🔥 Figure P4.48 (Hem <strong>9i<sub>Δ</sub></strong> hem <strong>1.7v<sub>Δ</sub></strong> İçeren 3 Gözlü Devre):</strong><br>
+          • Göz akımları saat yönünde <strong>I<sub>1</sub></strong> (sol), <strong>I<sub>2</sub></strong> (orta), <strong>I<sub>3</sub></strong> (sağ) olsun.<br>
+          • <code>ek 1:</code> Sol üst <strong>2 Ω</strong> dirençten sadece <strong>I<sub>1</sub></strong> geçer: <code>vΔ = 2 · I₁</code>.<br>
+          • <code>ek 2:</code> Orta üst <strong>5 Ω</strong> dirençten sadece <strong>I<sub>2</sub></strong> geçer: <code>iΔ = I₂</code>.<br>
+          • <code>ek 3:</code> Sağ dış kolda yukarı doğru <strong>1.7v<sub>Δ</sub></strong> akım kaynağı olduğu için 3. çevre akımı doğrudan bellidir (saat yönüne ters olduğu için eksi!):<br>
+            👉 <span class="math-hl">I₃ = -1.7 vΔ = -1.7 (2 I₁) = -3.4 I₁</span> !<br>
+          • <strong>1. Çevre KVL:</strong> -50 + 2 I₁ + 4(I₁ - I₂) + 9 iΔ = 0  ⟹  <span class="math-ok">6 I₁ + 5 I₂ = 50</span><br>
+          • <strong>2. Çevre KVL:</strong> -9 iΔ + 4(I₂ - I₁) + 5 I₂ + 20(I₂ - I₃) = 0<br>
+            I₃ yerine <code>-3.4 I₁</code> koyarsak: -4 I₁ + 20 I₂ + 68 I₁ = 0  ⟹  <span class="math-hl">16 I₁ + 5 I₂ = 0</span><br>
+          • İki denklemi çıkar: 10 I₁ = -50  ⟹  <span class="math-ok">I₁ = -5 A,  I₂ = iΔ = 16 A,  I₃ = 17 A,  vΔ = -10 V</span> !<br><br>
+          <strong>🔥 Figure P4.42 (<strong>53i<sub>Δ</sub></strong> Üst Köprü Bağımlı Kaynaklı Devre):</strong><br>
+          • Alt sol (<strong>I<sub>1</sub></strong>), alt sağ (<strong>I<sub>2</sub></strong>), üst (<strong>I<sub>3</sub></strong>) saat yönünde; <code>ek 1: iΔ = I₁ - I₂</code>.<br>
+          • Çevre 1: <code>30 I₁ - 20 I₂ - 3 I₃ = 30</code> | Çevre 2: <code>-20 I₁ + 27 I₂ - 5 I₃ = 30</code><br>
+          • Çevre 3: <code>53(I₁ - I₂) + 5(I₃ - I₂) + 3(I₃ - I₁) = 0 ⟹ 50 I₁ - 58 I₂ + 8 I₃ = 0</code><br>
+          • Çözüm: <span class="math-ok">I₁ = 52 A,  I₂ = 60 A,  I₃ = 110 A,  iΔ = -8 A</span> !
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       BÖLÜM 4: SINAV SORUSU 4 — 1, 2 VE 3. BÖLÜMÜ İÇEREN GÜÇ HESAPLARI SORUSU
+       ===================================================================== -->
+  <section class="section-block" id="soru4">
+    <div class="sec-header emerald">
+      <div class="sec-kicker" style="color:var(--emerald);">SINAV SORUSU 4 (25 PUAN) — TAHTADAKİ 4. MADDE</div>
+      <h2 class="sec-title">🔋 Soru 4: 1, 2 ve 3. Bölümü İçeren, Güç Hesapları da Olan Bağımlı Kaynaklı Soru</h2>
+      <p class="sec-desc">
+        Tuna Hoca tahtaya <strong>"4- 1, 2 ve 3. bölümü içeren, güç hesapları da olan bir soru"</strong> yazdı. Çalışma Yaprağı 1'deki (Sayfa 7, 8, 9, 10) bağımlı kaynaklı güç sorularının <strong>TAMAMI</strong> bu sorunun birebir adayıdır!
+      </p>
+    </div>
+
+    <div class="grid-2">
+      <!-- PROBLEM 2.10 -->
+      <div class="card" style="border:2px solid var(--emerald);">
+        <h3>🏆 Örnek 4.1 (Problem 2.10 — ÇY1 Sayfa 8): <strong>2i<sub>φ</sub></strong> Bağımlı Kaynaklı Tam Güç Dengesi</h3>
+        <p style="font-size:0.92rem; color:var(--muted);">
+          <strong>Soru:</strong> Solda <strong>5 A (↑)</strong> bağımsız akım kaynağı, paralel <strong>30 Ω</strong> (<strong>i<sub>φ</sub> ↓</strong>). Üstte paralel iki kol: <strong>2i<sub>φ</sub> (→)</strong> bağımlı akım kaynağı ve <strong>10 Ω</strong> direnç. Sağda <strong>v<sub>s</sub></strong> (<strong>+</strong> üstte) bağımsız gerilim kaynağı. <strong><strong>i<sub>φ</sub> = 2 A</strong> verildiğine göre</strong> <strong>v<sub>s</sub></strong>'yi ve tüm elemanların güçlerini bulunuz.
+        </p>
+        <div class="math-block">
+          <strong>1) Sol Düğüm Gerilimini (<strong>V<sub>1</sub></strong>) Bulalım:</strong><br>
+          30 Ω dirençten aşağı <code>iφ = 2 A</code> akıyor! Ohm kanunundan sol üst düğümün gerilimi:<br>
+          👉 <span class="math-hl">V₁ = 30 Ω · 2 A = 60 V</span> !<br><br>
+          <strong>2) KCL ile Kollardaki Akımları Bulalım:</strong><br>
+          • Sol düğüme aşağıdan 5 A giriyor, 2 A'i 30 Ω'dan aşağı iniyor. Kalan <code>5 - 2 = 3 A</code> sağa doğru ilerler!<br>
+          • Üstteki bağımlı kaynak <code>2 iφ = 2 · 2 = 4 A</code> akımı sağa doğru çekiyor.<br>
+          • Toplam 3 A geliyordu, 4 A'i üstten gittiyse 10 Ω dirençten sağa <code>3 - 4 = -1 A</code> (yani sağdan sola 1 A!) geçer!<br>
+          • Sağdaki <strong>v<sub>s</sub></strong> kaynağından aşağı inen toplam akım yine <code>4 - 1 = 3 A</code>'dir (+ uçtan GİRİYOR!).<br><br>
+          <strong>3) <strong>v<sub>s</sub></strong> Gerilimini Bulalım:</strong><br>
+          10 Ω dirençte sağdan sola 1 A geçtiği için sağ taraf (<strong>v<sub>s</sub></strong>) sol taraftan (<strong>60 V</strong>) <strong>10 Ω · 1 A = 10 V</strong> daha yüksektir:<br>
+          👉 <span class="math-ok">v<sub>s</sub> = 60 + 10 = 70 V</span> !<br><br>
+          <strong>4) TÜM ELEMANLARIN GÜÇ TABLOSU (<strong>∑P = 0</strong> Sağlaması):</strong><br>
+          • <strong>5 A Kaynak:</strong> Üstü (+) 60 V, akım + uçtan ÇIKIYOR ⟹ <code>P_5A = -60 · 5 = -300 W</code> (300 W Güç Veriyor)<br>
+          • <strong>2iφ Bağımlı Kaynak:</strong> Solu 60 V, sağı 70 V; 4 A akım 70 V'luk (+) uçtan ÇIKIYOR:<br>
+            <code>P_dep = -(70 - 60) · 4 = -10 · 4 = -40 W</code> (40 W Güç Veriyor)<br>
+          • <strong>v<sub>s</sub> Kaynağı (70 V):</strong> 3 A akım (+) uçtan GİRİYOR ⟹ <code>P_vs = +70 · 3 = +210 W</code> (210 W Güç Alıyor)<br>
+          • <strong>30 Ω Direnç:</strong> <code>P_30 = I² R = 2² · 30 = +120 W</code> (120 W Güç Harcıyor)<br>
+          • <strong>10 Ω Direnç:</strong> <code>P_10 = I² R = 1² · 10 = +10 W</code> (10 W Güç Harcıyor)<br>
+          ✅ <strong>TOPLAM:</strong> <span class="math-ok">Verilen (300 + 40 = 340 W) = Alınan (210 + 120 + 10 = 340 W) ⟹ ∑P = 0!</span>
+        </div>
+      </div>
+
+      <!-- PROBLEM 2.36 -->
+      <div class="card" style="border:2px solid var(--emerald);">
+        <h3>🏆 Örnek 4.2 (Problem 2.36 — ÇY1 Sayfa 9): 3 Bağımlı Kaynaklı Devre (<strong>20i<sub>σ</sub>, 5i<sub>σ</sub>, 8i<sub>Δ</sub></strong>)</h3>
+        <p style="font-size:0.92rem; color:var(--muted);">
+          <strong>Soru:</strong> Solda <strong>50 V</strong> kaynak, üstte <strong>(-  +) 20i<sub>σ</sub></strong>, dikey kolda <strong>18 Ω</strong> (<strong>i<sub>Δ</sub> ↓</strong>). Ortada üstte <strong>(+  -) 5i<sub>σ</sub></strong>, dikey kolda <strong>40 Ω</strong> (<strong>+ v<sub>o</sub> -</strong>, <strong>i<sub>σ</sub> ↓</strong>). Sağda üstte <strong>(+  -) 8i<sub>Δ</sub></strong> ve en sağda <strong>20 V</strong> kaynak. (a) <strong>i<sub>Δ</sub></strong> ve <strong>v<sub>o</sub></strong>'yu bulunuz, (b) Güç dengesini gösteriniz.
+        </p>
+        <div class="math-block">
+          <strong>1) Sol ve Orta Gözde KVL Yazarak <strong>i<sub>σ</sub></strong> ve <strong>i<sub>Δ</sub></strong>'yı Bulalım:</strong><br>
+          • 18 Ω kolundaki gerilim: <code>V_sol = 18 · iΔ</code>. 40 Ω kolundaki gerilim: <code>v<sub>o</sub> = 40 · iσ</code>.<br>
+          • <strong>Orta Gözde KVL:</strong> -18 iΔ + 5 iσ + 40 iσ = 0  ⟹  18 iΔ = 45 iσ  ⟹  <span class="math-hl">iΔ = 2.5 iσ</span> !<br>
+          • <strong>Sol Gözde KVL:</strong> -50 - 20 iσ + 18 iΔ = 0<br>
+            Burada <code>18 iΔ</code> yerine <code>45 iσ</code> yazalım:<br>
+            -50 - 20 iσ + 45 iσ = 0  ⟹  25 iσ = 50  ⟹  <span class="math-ok">iσ = 2 A</span> !<br>
+          • Buradan: <span class="math-ok">iΔ = 2.5 · 2 = 5 A</span>  ve  <span class="math-hl">v<sub>o</sub> = 40 · 2 = 80 V</span> !<br><br>
+          <strong>2) Sağ Gözde KVL ve Kollardaki Akımlar (KCL):</strong><br>
+          • Sağdaki 8iΔ kaynağının gerilimi: <code>8 · 5 = 40 V</code> (+ solda, − sağda).<br>
+          • Sağ gözde 40 Ω (80 V), 8iΔ (40 V) ve 20 V kaynak zaten KVL'yi sağlar (80 - 40 - 20 ≠ 0 değil: 8iΔ kaynağının üzerinde sağ göz akımı vardır? Hayır, sağ kol seri gerilim kaynakları değil, sağ üstte 8iΔ var!).<br>
+          • <strong>Alternatif Hızlı Güç Sorusu (Problem 2.32 — ÇY1 Sayfa 9):</strong><br>
+            45 A (↑), 6 Ω (i<sub>x</sub> ↓), 2 Ω (+ v<sub>o</sub> −) ve 2i<sub>x</sub> (+ üst, − alt):<br>
+            KVL: -6 i<sub>x</sub> + 2(45 - i<sub>x</sub>) + 2 i<sub>x</sub> = 0 ⟹ 6 i<sub>x</sub> = 90 ⟹ <span class="math-ok">i<sub>x</sub> = 15 A, v<sub>o</sub> = 60 V</span>!<br>
+            • P_45A = -90V · 45A = <span class="math-pink">-4050 W (Üretilen)</span><br>
+            • P_6Ω = 15²·6 = +1350 W, P_2Ω = 30²·2 = +1800 W, P_2ix = +30V·30A = +900 W<br>
+            • Toplam Harcanan = 1350 + 1800 + 900 = <span class="math-ok">+4050 W (∑P = 0!)</span>
+        </div>
+      </div>
+
+      <!-- PROBLEM 2.9 & FIG 2.23 -->
+      <div class="card">
+        <h3>🏆 Örnek 4.3 (Problem 2.9 & Fig 2.23 — ÇY1 Sayfa 7): Tek Düğümlü Bağımlı Kaynak Güç Soruları</h3>
+        <div class="math-block">
+          <strong>📌 Problem 2.9 (ÇY1 Sayfa 7 En Alt):</strong><br>
+          • Solda 5 V, 54 kΩ (<strong>i<sub>1</sub> →</strong>), <strong>(-  +) 1 V</strong> kaynak. Ortada 6 kΩ. Sağda <strong>30i<sub>1</sub> (←)</strong> bağımlı akım kaynağı (<strong>+ v -</strong>), 1.8 kΩ ve 8 V kaynak.<br>
+          • Orta düğüme soldan <strong>i<sub>1</sub></strong>, sağdan <strong>30i<sub>1</sub></strong> giriyor! Toplam <code>31 i₁</code> akımı 6 kΩ'dan aşağı akar:<br>
+            👉 Orta düğüm gerilimi: <code>V<sub>c</sub> = 6 kΩ · 31 i₁ = 186 i₁</code>.<br>
+          • Sol kolda: <code>5 - 54 i₁ + 1 = V<sub>c</sub> ⟹ 6 - 54 i₁ = 186 i₁ ⟹ 240 i₁ = 6</code><br>
+            👉 <span class="math-ok">i₁ = 6 / 240 mA = 0.025 mA = 25 μA</span> ! (ve V<sub>c</sub> = 4.65 V)<br>
+          • Sağ koldan sola akan akım: <code>30 i₁ = 0.75 mA</code>.<br>
+          • Sağdaki düğüm (30i₁'in − ucu): <code>V_sağ = 8 - 1.8 kΩ · 0.75 mA = 8 - 1.35 = 6.65 V</code>.<br>
+          • Bağımlı kaynağın gerilimi: <span class="math-hl">v = V<sub>c</sub> - V_sağ = 4.65 - 6.65 = -2 V</span> !<br><br>
+          <strong>📌 Figure 2.23 (ÇY1 Sayfa 7 Üst):</strong><br>
+          • Sol gözde 10 V ve 6 Ω: <code>i<sub>s</sub> = 10 / 6 = 5/3 A</code>.<br>
+          • Sağ gözde bağımlı kaynak <code>3 i<sub>s</sub> = 3 · (5/3) = 5 V</code>!<br>
+          • Sağ göz akımı: <code>i<sub>o</sub> = 5 V / (2 + 3 Ω) = 1 A</code> ve <span class="math-ok">v<sub>o</sub> = 3 Ω · 1 A = 3 V</span>!<br>
+          • Toplam Üretilen Güç = <code>P_10V + P_3is = 50/3 + 5 = 65/3 W (21.67 W)</code> = Toplam Harcanan Güç!
+        </div>
+      </div>
+
+      <!-- PROBLEM 2.37 & P1.30 -->
+      <div class="card">
+        <h3>🏆 Örnek 4.4 (Problem 2.37 — ÇY1 Sayfa 10): Sağdan Sola Geriye Doğru Analiz!</h3>
+        <p style="font-size:0.92rem; color:var(--muted);">
+          <strong>Soru:</strong> En sağdaki <strong>10 Ω</strong> direnç üzerindeki gerilim <strong><strong>v<sub>o</sub> = 5 V</strong></strong> olarak verilmiştir. En sağdan başlayıp sola doğru giderek <strong>v<sub>1</sub></strong> ve <strong>v<sub>g</sub></strong> gerilimlerini bulunuz!
+        </p>
+        <div class="math-block">
+          <strong>1) En Sağ Gözden <strong>i<sub>2</sub></strong>'yi Bulalım:</strong><br>
+          • En sağda 40 Ω ve 10 Ω paraleldir, ikisinin de gerilimi <code>v<sub>o</sub> = 5 V</code>'tur.<br>
+          • Aşağı inen toplam akım: <code>I_sağ = 5/10 + 5/40 = 0.5 + 0.125 = 0.625 A</code>.<br>
+          • Bu akım aşağı bakan <strong>40i<sub>2</sub></strong> bağımlı kaynağından ters yönde döner: <code>-40 i₂ = 0.625 A</code><br>
+            👉 <span class="math-hl">i₂ = -0.625 / 40 = -1/64 A = -15.625 mA</span> !<br><br>
+          <strong>2) Orta Gözden <strong>v<sub>1</sub></strong> ve <strong>i<sub>1</sub></strong>'i Bulalım:</strong><br>
+          • <strong>i<sub>2</sub></strong> akımı doğrudan 80 Ω dirençten aşağı akar:<br>
+            👉 <span class="math-ok">v₁ = 80 Ω · (-1/64 A) = -5/4 V = -1.25 V</span> !<br>
+          • Orta gözde 20 Ω ve 80 Ω paraleldir (<strong>R<sub>eq</sub> = 16 Ω</strong>). Toplam aşağı akım: <code>-1.25 / 16 = -5/64 A</code>.<br>
+          • Bu akım aşağı bakan <strong>25i<sub>1</sub></strong> kaynağından gelir: <code>-25 i₁ = -5/64 ⟹ i₁ = 1/320 A (3.125 mA)</code> !<br><br>
+          <strong>3) En Sol Gözden <strong>v<sub>g</sub></strong>'yi Bulalım:</strong><br>
+          • Sol gözde <strong>i<sub>1</sub> = 1/320 A</strong> akımı birbirine seri olan 60 Ω ve 260 Ω (toplam 320 Ω) üzerinden akar:<br>
+            👉 <span class="math-ok">v<sub>g</sub> = (60 + 260) · i₁ = 320 Ω · (1/320 A) = 1 V</span> (Tam Sayı!)
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       EK BÖLÜM: ÇALIŞMA YAPRAĞI 4 (OP-AMP) & 5 (RL/RC/RLC) HIZLI ÖZET
+       ===================================================================== -->
+  <section class="section-block" id="ek-ozet">
+    <div class="sec-header purple">
+      <div class="sec-kicker" style="color:var(--purple);">EK REFERANS — ÇALIŞMA YAPRAĞI 4 (OP-AMP) VE 5 (RL / RC / RLC) ÖZETİ</div>
+      <h2 class="sec-title">📎 Ek Referans: Op-Amp ve 1. / 2. Derece RL-RC-RLC Devre Kuralları</h2>
+      <p class="sec-desc">
+        Tahtadaki 4 vize sorusu ilk 4 bölümden (Maksimum Güç, Kaynak Dönüşümü/Süperpozisyon, Düğüm/Çevre ve Güç Hesabı) oluşmaktadır. Gönderdiğin 4. ve 5. çalışma yapraklarındaki Op-Amp ve RL/RC konularının altın formülleri de aşağıda özetlenmiştir:
+      </p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>🔺 İşlemsel Yükselteç (Op-Amp — Çalışma Yaprağı 4 s.3-4)</h3>
+        <div class="math-block">
+          <strong>İdeal Op-Amp'ın 2 Altın Kuralı:</strong><br>
+          1) Giriş uçlarının gerilimleri birbirine eşittir: <span class="math-hl">V₊ = V₋</span><br>
+          2) Giriş uçlarının içine akım GİRMEZ: <span class="math-ok">I₊ = I₋ = 0 A</span><br><br>
+          • <strong>Eviren (Inverting):</strong> V_o = -(R_f / R_1) · V_i<br>
+          • <strong>Evirmeyen (Non-inverting — Fig P4.33):</strong> Kazanç A = 1 + R_f / R_1 (Kazancın 10 olması için: 1 + 18k/R₁ = 10 ⟹ <span class="math-ok">R₁ = 2 kΩ</span>!)<br>
+          • <strong>Doyum (Saturation — Fig P5.28):</strong> Çıkış gerilimi ±V_CC besleme sınırını aşamaz (|V_o| = V_sat olduğunda tam doyuma girer).
+        </div>
+      </div>
+      <div class="card">
+        <h3>⏱️ 1. Derece RL ve RC Devreleri (Çalışma Yaprağı 5)</h3>
+        <div class="math-block">
+          <strong>Genel Çözüm Formülü (t ≥ 0):</strong><br>
+          <span class="math-hl">x(t) = x(∞) + [ x(0⁺) - x(∞) ] · e^(-t / τ)</span><br><br>
+          • <strong>Kondansatör (RC):</strong> Gerilimi ani değişemez (<span class="math-ok">v_C(0⁺) = v_C(0⁻)</span>), DC'de açık devredir, zaman sabiti <span class="math-hl">τ = R_Th · C</span>.<br>
+          • <strong>Bobin (RL):</strong> Akımı ani değişemez (<span class="math-ok">i_L(0⁺) = i_L(0⁻)</span>), DC'de kısa devredir, zaman sabiti <span class="math-hl">τ = L / R_Th</span>.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       BÖLÜM 5: 5 ADET BİREBİR TUNA GÖKSU 4 SORULUK VİZE DENEME SINAVI
+       ===================================================================== -->
+  <section class="section-block" id="denemeler">
+    <div class="sec-header rose">
+      <div class="sec-kicker" style="color:var(--rose);">BÖLÜM 5 — 5 ADET 4 SORULUK BİREBİR VİZE DENEME SINAVI (20 SORU)</div>
+      <h2 class="sec-title">✍️ Tuna Göksu 4 Soruluk Vize Deneme Sınavları (Kendin Çöz & Çözümlü Mod)</h2>
+      <p class="sec-desc">
+        Her deneme sınavı tıpkı Tuna Hoca'nın tahtaya yazdığı gibi <strong>4 sorudan (Soru 1: Max Güç, Soru 2: Kaynak Dönüşümü/Süperpozisyon, Soru 3: Düğüm/Çevre, Soru 4: Güç Dengesi)</strong> oluşur ve %100 bağımlı kaynaklıdır!
+      </p>
+    </div>
+
+    <div class="quick-bar" style="background:#fff1f2; border-color:#f43f5e;">
+      <div>
+        <strong style="color:#9f1239;">🎛️ Görünüm Modunu Seç:</strong>
+        <span id="scoreDisplay" style="margin-left:12px; font-weight:800; color:#059669;">Skor: 0 / 4 Doğru (0 Puan)</span>
+      </div>
+      <div class="quick-btns">
+        <button class="q-btn primary" onclick="setExamMode('interactive')">✍️ Soru Çözüm Ekranı (Kendim Çözeceğim)</button>
+        <button class="q-btn indigo" onclick="setExamMode('study')">📖 Tüm Çözümleri Açık Göster (Döküman Modu)</button>
+      </div>
+    </div>
+
+    <div class="exam-tabs" id="examTabs"></div>
+    <div id="examContainer"></div>
+  </section>
+
+</main>
+
+<script>
+const EXAMS_DATA = [{"id": 1, "title": "1. Vize Denemesi (Tahta Birebir Prova)", "desc": "Tuna Hoca'nın tahtada yazdığı 4 sorunun birebir çalışma yaprağı karşılıkları (P4.87, P4.97, ÇY2-S2-D1, P2.10).", "questions": [{"qnum": "Soru 1 (25 Puan) — Maksimum Güç Transferi (Tahtadaki P4.87 Sorusu)", "topic": "1. Konu: Bağımlı Kaynaklı Maksimum Güç Transferi", "stem": "Çalışma Yaprağı 3 & 4'teki <strong>Figure P4.87</strong> devresinde: Solda 110 V kaynak, üst solda 15 Ω direnç (+ vΔ −), birinci dikey kolda yukarı doğru 0.1 vΔ bağımlı akım kaynağı, ortada 5 Ω direnç (iΔ →), ikinci dikey kolda (− +) 3iΔ bağımlı gerilim kaynağı ile seri 8 Ω direnç ve sağ uçta R_o yük direnci bulunmaktadır. <strong>R_o direncine maksimum güç aktarılması için R_o kaç Ω olmalı ve aktarılan maksimum güç (P_max) kaç W olur?</strong>", "options": ["A) R_o = 5.5 Ω  ve  P_max = 53.71 W  (V_Th = 34.375 V, I_sc = 6.25 A)", "B) R_o = 8.0 Ω  ve  P_max = 42.50 W  (V_Th = 36.88 V, I_sc = 4.61 A)", "C) R_o = 5.0 Ω  ve  P_max = 60.50 W  (V_Th = 34.78 V, I_sc = 6.95 A)", "D) R_o = 7.5 Ω  ve  P_max = 333.33 W (V_Th = 100 V, I_sc = 13.33 A)"], "correct": 0, "solution": "<strong>Adım 0 (Tahtadaki Ek Denklemler):</strong><br>\n• <code>ek 1: vΔ = 110 - V₁</code><br>\n• <code>ek 2: iΔ = (V₁ - V₂) / 5</code><br><br>\n<strong>Adım 1 (Açık Devre Gerilimi V_Th = V₂):</strong><br>\n• Düğüm V₁ KCL: <code>(V₁ - 110)/15 - 0.1(110 - V₁) + (V₁ - V₂)/5 = 0</code> ⟹ (×30) ⟹ <code>11 V₁ - 6 V₂ = 550</code><br>\n• Düğüm V₂ KCL: <code>(V₂ - V₁)/5 + [V₂ + 3(V₁ - V₂)/5]/8 = 0</code> ⟹ (×40) ⟹ <code>-5 V₁ + 10 V₂ = 0 ⟹ V₁ = 2 V₂</code><br>\n• Yerine koy: <code>11(2 V₂) - 6 V₂ = 550 ⟹ 16 V₂ = 550 ⟹ V_Th = 275/8 = 34.375 V</code>.<br><br>\n<strong>Adım 2 (Kısa Devre Akımı I_sc, V₂ = 0 V):</strong><br>\n• <code>11 V₁ - 0 = 550 ⟹ V₁ = 50 V</code>.<br>\n• <code>iΔ = (50 - 0)/5 = 10 A</code>.<br>\n• 8 Ω kolundan aşağı inen akım: <code>(0 + 3·10)/8 = 3.75 A</code>.<br>\n• Kısa devre telinden inen akım: <code>I_sc = 10 - 3.75 = 6.25 A (25/4 A)</code>.<br><br>\n<strong>Adım 3 (R_o ve P_max):</strong><br>\n• <code>R_o = R_Th = V_Th / I_sc = 34.375 / 6.25 = 5.5 Ω</code><br>\n• <code>P_max = (34.375)² / (4 · 5.5) = 53.71 W</code>."}, {"qnum": "Soru 2 (25 Puan) — Bağımlı Kaynaklı Süperpozisyon (Figure P4.97)", "topic": "2. Konu: Süperpozisyon Yöntemi", "stem": "Çalışma Yaprağı 3 & 4'teki <strong>Figure P4.97</strong> devresinde: Solda 25 V bağımsız kaynak, seri 4 kΩ direnç (iφ →), ortada aşağı yönlü 5 mA bağımsız akım kaynağı, sağda 20 kΩ direnç (+ v_o −) ve üst kolda 25 V düğümünden v_o düğümüne doğru 2.2 iφ bağımlı akım kaynağı vardır. <strong>Süperpozisyon yöntemiyle 25 V kaynağın katkısı (v_o1), 5 mA kaynağın katkısı (v_o2) ve toplam v_o gerilimi kaçtır?</strong>", "options": ["A) v_o1 = 400/17 V (+23.53 V),  v_o2 = -100/17 V (-5.88 V),  Toplam v_o = 300/17 V (17.65 V)", "B) v_o1 = 20 V,  v_o2 = -5 V,  Toplam v_o = 15 V", "C) v_o1 = 25 V,  v_o2 = -10 V,  Toplam v_o = 15 V", "D) v_o1 = 400/17 V (+23.53 V),  v_o2 = +100/17 V (+5.88 V),  Toplam v_o = 500/17 V (29.41 V)"], "correct": 0, "solution": "<strong>Altın Kural:</strong> 2.2 iφ bağımlı kaynağı ASLA kapatılmaz, her iki adımda da devrede kalır!<br><br>\n<strong>1. Adım (Sadece 25 V Açık, 5 mA Açık Devre):</strong><br>\n• <code>iφ' = (25 - v_o1) / 4k</code>.<br>\n• Düğüm v_o1 KCL: <code>v_o1 / 20k - 3.2 · (25 - v_o1)/4k = 0</code> (×20k)<br>\n• <code>v_o1 - 16(25 - v_o1) = 0 ⟹ 17 v_o1 = 400 ⟹ v_o1 = 400/17 ≈ 23.53 V</code>.<br><br>\n<strong>2. Adım (Sadece 5 mA Açık, 25 V Kısa Devre = 0 V):</strong><br>\n• <code>iφ'' = (0 - v_o2) / 4k = -v_o2 / 4k</code>.<br>\n• Düğüm v_o2 KCL: <code>v_o2 / 20k + 5 mA - 3.2 · (-v_o2 / 4k) = 0</code> (×20k)<br>\n• <code>v_o2 + 100 + 16 v_o2 = 0 ⟹ 17 v_o2 = -100 ⟹ v_o2 = -100/17 ≈ -5.88 V</code>.<br><br>\n<strong>3. Adım (Toplam):</strong><br>\n• <code>v_o = v_o1 + v_o2 = 400/17 - 100/17 = 300/17 ≈ 17.65 V</code>."}, {"qnum": "Soru 3 (25 Puan) — Düğüm Gerilimleri Analizi (Çalışma Yaprağı 2, Sayfa 2, 1. Devre)", "topic": "3. Konu: Düğüm Gerilimleri Yöntemi (D.G.Y.)", "stem": "Çalışma Yaprağı 2 (Sayfa 2, 1. Devre): Solda yukarı yönlü 3 A akım kaynağı, paralel 200 Ω direnç (+ v_o −), orta kolda 10 Ω direnç ile seri (− +) 5iΔ bağımlı gerilim kaynağı, sağ üstte 20 Ω direnç (iΔ → sağa doğru) ve en sağda 80 V (+ üstte) gerilim kaynağı bulunmaktadır. <strong>Düğüm gerilimleri yöntemiyle v_o gerilimi ve iΔ akımı kaçtır?</strong>", "options": ["A) v_o = 50 V  ve  iΔ = -1.5 A", "B) v_o = 60 V  ve  iΔ = -1.0 A", "C) v_o = 40 V  ve  iΔ = -2.0 A", "D) v_o = 80 V  ve  iΔ = 0 A"], "correct": 0, "solution": "<strong>Adım 1 (Düğümler ve Ek Denklem):</strong><br>\n• Sağ üst düğüm doğrudan 80 V kaynağa bağlı olduğu için <code>80 V</code>'tur.<br>\n• Sol/orta üst düğümün gerilimi <code>V₁ = v_o</code>'dır.<br>\n• <code>ek 1: iΔ = (v_o - 80) / 20</code>.<br><br>\n<strong>Adım 2 (Düğüm v_o'da KCL):</strong><br>\n• <code>-3 + v_o/200 + (v_o + 5 iΔ)/10 + (v_o - 80)/20 = 0</code><br>\n• <code>iΔ = (v_o - 80)/20</code> yerine koyup denklemi 200 ile çarpalım:<br>\n• <code>-600 + v_o + 20 v_o + 5(v_o - 80) + 10(v_o - 80) = 0</code><br>\n• <code>36 v_o - 1800 = 0 ⟹ v_o = 50 V</code> ve <code>iΔ = (50 - 80)/20 = -1.5 A</code>."}, {"qnum": "Soru 4 (25 Puan) — Bölüm 1-2-3 Bağımlı Kaynaklı Güç Dengesi (Problem 2.10)", "topic": "4. Konu: KCL, KVL ve Güç Hesapları (∑P = 0)", "stem": "Çalışma Yaprağı 1 (Sayfa 8, Problem 2.10): Solda 5 A (↑) akım kaynağı, paralel 30 Ω direnç (iφ ↓), üstte birbirine paralel 2iφ (→) bağımlı akım kaynağı ile 10 Ω direnç, en sağda v_s (+ üstte) bağımsız gerilim kaynağı vardır. <strong>iφ = 2 A verildiğine göre; v_s gerilimi, bağımlı kaynağın gücü ve devrede üretilen toplam güç kaçtır?</strong>", "options": ["A) v_s = 70 V,  2iφ kaynağı 40 W güç üretir (P = -40 W),  Toplam üretilen = harcanan güç = 340 W", "B) v_s = 60 V,  2iφ kaynağı 40 W güç harcar (P = +40 W),  Toplam üretilen = harcanan güç = 300 W", "C) v_s = 50 V,  2iφ kaynağı 20 W güç üretir (P = -20 W),  Toplam üretilen = harcanan güç = 280 W", "D) v_s = 70 V,  2iφ kaynağı 80 W güç üretir (P = -80 W),  Toplam üretilen = harcanan güç = 380 W"], "correct": 0, "solution": "<strong>Adım 1 (Gerilim ve Akımlar):</strong><br>\n• 30 Ω dirençten <code>iφ = 2 A</code> geçtiği için sol düğüm gerilimi: <code>V₁ = 30 · 2 = 60 V</code>.<br>\n• Sol düğümden sağa giden toplam akım: <code>5 - 2 = 3 A</code>.<br>\n• Üstteki bağımlı kaynak <code>2 iφ = 4 A</code> sağa çektiği için 10 Ω dirençten sağdan sola <code>1 A</code> akım geçer!<br>\n• Dolayısıyla sağ düğüm gerilimi: <code>v_s = 60 + 10 · 1 = 70 V</code>.<br><br>\n<strong>Adım 2 (Güç Hesapları):</strong><br>\n• <code>P_5A = -60 V · 5 A = -300 W</code> (Üretir)<br>\n• <code>P_2iφ = -(70 - 60) V · 4 A = -40 W</code> (Üretir)<br>\n• <code>P_vs = +70 V · 3 A = +210 W</code> (Harcar)<br>\n• <code>P_30Ω = 2² · 30 = +120 W</code> (Harcar) ve <code>P_10Ω = 1² · 10 = +10 W</code> (Harcar)<br>\n• <strong>Toplam Üretilen = 300 + 40 = 340 W = Toplam Harcanan (210 + 120 + 10 = 340 W)!</strong>"}]}, {"id": 2, "title": "2. Vize Denemesi (Çevre Akımları & Kaynak Dönüşümü Odaklı)", "desc": "P4.88 Maksimum Güç, P4.56 Bağımlı Kaynak Dönüşümü, P4.48 Çevre Akımları ve P2.32 Güç Sorusu.", "questions": [{"qnum": "Soru 1 (25 Puan) — Maksimum Güç Transferi (Figure P4.88)", "topic": "1. Konu: Bağımlı Kaynaklı Maksimum Güç Transferi", "stem": "Çalışma Yaprağı 4 (Sayfa 1, <strong>Figure P4.88</strong>) devresinde: Solda 200 V kaynak, seri 25 Ω, birinci dikey kolda 100 Ω, ortada 10 Ω (i_x →), ikinci dikey kolda 20 Ω ile seri (+ −) 30i_x bağımlı gerilim kaynağı ve sağda R_o yük direnci vardır. <strong>R_o direncine maksimum güç transferi için V_Th, R_Th (= R_o) ve P_max değerleri nedir?</strong>", "options": ["A) V_Th = 100 V,  R_o = R_Th = 7.5 Ω,  P_max = 333.33 W", "B) V_Th = 120 V,  R_o = R_Th = 10 Ω,  P_max = 360.00 W", "C) V_Th = 80 V,   R_o = R_Th = 5.0 Ω,  P_max = 320.00 W", "D) V_Th = 100 V,  R_o = R_Th = 15 Ω,   P_max = 166.67 W"], "correct": 0, "solution": "<strong>1) Açık Devre (V_Th = Vₐ):</strong><br>\n• <code>ek 1: i_x = (V₁ - Vₐ)/10</code>.<br>\n• KCL (V₁): <code>(V₁ - 200)/25 + V₁/100 + (V₁ - Vₐ)/10 = 0 ⟹ 15 V₁ - 10 Vₐ = 800</code>.<br>\n• KCL (Vₐ): <code>(Vₐ - V₁)/10 + [Vₐ - 30(V₁ - Vₐ)/10]/20 = 0 ⟹ -5 V₁ + 6 Vₐ = 0 ⟹ V₁ = 1.2 Vₐ</code>.<br>\n• Çözüm: <code>V_Th = Vₐ = 100 V</code> (ve V₁ = 120 V).<br><br>\n<strong>2) Kısa Devre (Vₐ = 0 V ⟹ I_sc):</strong><br>\n• <code>15 V₁ = 800 ⟹ V₁ = 160/3 V</code> ve <code>i_x = 16/3 A</code>.<br>\n• Sağ koldan aşağı inen akım: <code>(0 - 30·(16/3))/20 = -8 A</code>.<br>\n• <code>I_sc = 16/3 - (-8) = 40/3 A ≈ 13.33 A</code>.<br><br>\n<strong>3) R_Th ve P_max:</strong><br>\n• <code>R_o = R_Th = 100 / (40/3) = 7.5 Ω</code> ve <code>P_max = 100² / (4 · 7.5) = 333.33 W</code>."}, {"qnum": "Soru 2 (25 Puan) — Bağımlı Kaynaklı Kaynak Dönüşümü (Figure P4.56)", "topic": "2. Konu: Kaynak Dönüşümü Yöntemi", "stem": "Çalışma Yaprağı 3 (Sayfa 2, <strong>Figure P4.56</strong>) devresinde: Soldaki (− +) 20 V ve seri 100 Ω kolu ile sağdaki (− +) 0.4v_a bağımlı gerilim kaynağı ve seri 200 Ω koluna kaynak dönüşümü uygulanarak devre iki düğüme indirgeniyor. <strong>Bu dönüşüm sonucunda bulunan v_a ve vΔ gerilimleri kaçtır?</strong>", "options": ["A) v_a = +35.48 V (1100/31 V)  ve  vΔ = -32.26 V (-1000/31 V)", "B) v_a = +40.00 V  ve  vΔ = -20.00 V", "C) v_a = +25.00 V  ve  vΔ = +15.00 V", "D) v_a = -35.48 V  ve  vΔ = +32.26 V"], "correct": 0, "solution": "<strong>1) Kaynak Dönüşümleri:</strong><br>\n• Sol kol: <code>20 V (+ üstte) + 100 Ω ⟹ 0.2 A (↑) ∥ 100 Ω</code>. 250 Ω ile paralel birleşince <code>R_sol = 500/7 Ω</code>.<br>\n• Sağ kol: <code>0.4 v_a (+ üstte) + 200 Ω ⟹ 0.002 v_a (↑) ∥ 200 Ω</code>. 500 Ω ile paralel birleşince <code>R_sağ = 1000/7 Ω</code>.<br><br>\n<strong>2) Düğüm Denklemleri:</strong><br>\n• Sol düğüm (v_a): <code>(7/500) v_a = 0.2 + 0.2 - 0.003 vΔ ⟹ 7 v_a + 1.5 vΔ = 200</code>.<br>\n• Sağ düğüm (vΔ): <code>(7/1000) vΔ = -0.2 + 0.003 vΔ + 0.002 v_a ⟹ v_a - 2 vΔ = 100</code>.<br>\n• Çözüm: <code>vΔ = -1000/31 ≈ -32.26 V</code> ve <code>v_a = 1100/31 ≈ +35.48 V</code>."}, {"qnum": "Soru 3 (25 Puan) — Çevre Akımları Analizi (Figure P4.48)", "topic": "3. Konu: Çevre Akımları Yöntemi (Ç.A.Y.)", "stem": "Çalışma Yaprağı 3 (Sayfa 1, <strong>Figure P4.48</strong>) devresinde: Sol gözde 50 V kaynak, 2 Ω (+ vΔ −), ortak kolda 4 Ω ve (+ −) 9iΔ bağımlı gerilim kaynağı; orta gözde 5 Ω (iΔ →) ve 20 Ω; sağ dış kolda ise yukarı yönlü 1.7vΔ bağımlı akım kaynağı vardır. <strong>Saat yönündeki çevre akımları I₁, I₂ (= iΔ), I₃ ve vΔ gerilimi kaçtır?</strong>", "options": ["A) I₁ = -5 A,  I₂ = iΔ = 16 A,  I₃ = 17 A,  vΔ = -10 V", "B) I₁ = +5 A,  I₂ = iΔ = 8 A,   I₃ = 17 A,  vΔ = +10 V", "C) I₁ = -5 A,  I₂ = iΔ = 12 A,  I₃ = -17 A, vΔ = -10 V", "D) I₁ = +10 A, I₂ = iΔ = 16 A,  I₃ = 34 A,  vΔ = +20 V"], "correct": 0, "solution": "<strong>1) Yardımcı Denklemler (ek 1, ek 2, ek 3):</strong><br>\n• <code>ek 1: vΔ = 2 I₁</code><br>\n• <code>ek 2: iΔ = I₂</code><br>\n• <code>ek 3 (Sağ dış kol akım kaynağı): I₃ = -1.7 vΔ = -1.7(2 I₁) = -3.4 I₁</code>.<br><br>\n<strong>2) Çevre Denklemleri (KVL):</strong><br>\n• 1. Göz: <code>-50 + 2 I₁ + 4(I₁ - I₂) + 9 I₂ = 0 ⟹ 6 I₁ + 5 I₂ = 50</code>.<br>\n• 2. Göz: <code>-9 I₂ + 4(I₂ - I₁) + 5 I₂ + 20(I₂ - I₃) = 0</code>.<br>\n  <code>I₃ = -3.4 I₁</code> yerine yazılırsa: <code>-4 I₁ + 20 I₂ + 68 I₁ = 0 ⟹ 16 I₁ + 5 I₂ = 0</code>.<br>\n• Çözüm: <code>10 I₁ = -50 ⟹ I₁ = -5 A</code>, <code>I₂ = 16 A</code>, <code>I₃ = 17 A</code>, <code>vΔ = -10 V</code>."}, {"qnum": "Soru 4 (25 Puan) — Bölüm 1-2-3 Bağımlı Kaynaklı Güç Hesabı (Problem 2.32)", "topic": "4. Konu: KCL, KVL ve Güç Dengesi", "stem": "Çalışma Yaprağı 1 (Sayfa 9, <strong>Figure P2.32</strong>) devresinde: Solda yukarı yönlü 45 A bağımsız akım kaynağı, paralel 6 Ω direnç (i_x ↓), sağ üstte 2 Ω direnç (+ v_o −) ve en sağda (+ −) 2i_x bağımlı gerilim kaynağı vardır. <strong>Devredeki v_o gerilimi ve 45 A kaynağın devreye verdiği toplam güç kaçtır?</strong>", "options": ["A) i_x = 15 A,  v_o = 60 V,  45 A kaynağın verdiği güç = 4050 W", "B) i_x = 20 A,  v_o = 50 V,  45 A kaynağın verdiği güç = 5400 W", "C) i_x = 15 A,  v_o = 30 V,  45 A kaynağın verdiği güç = 2700 W", "D) i_x = 10 A,  v_o = 70 V,  45 A kaynağın verdiği güç = 2700 W"], "correct": 0, "solution": "<strong>1) KCL ve KVL Analizi:</strong><br>\n• Sol düğüme 45 A giriyor, <code>i_x</code> kadarı 6 Ω'dan aşağı iniyor; kalan <code>(45 - i_x)</code> akımı sağ koldaki 2 Ω ve 2i_x üzerinden akar.<br>\n• Sağ gözde KVL: <code>-6 i_x + 2(45 - i_x) + 2 i_x = 0 ⟹ 6 i_x = 90 ⟹ i_x = 15 A</code>!<br>\n• 2 Ω dirençten geçen akım: <code>45 - 15 = 30 A</code> ⟹ <code>v_o = 2 Ω · 30 A = 60 V</code>.<br><br>\n<strong>2) Güç Hesabı:</strong><br>\n• Sol düğüm gerilimi: <code>V = 6 Ω · 15 A = 90 V</code>.<br>\n• 45 A kaynağın verdiği güç: <code>P_45A = 90 V · 45 A = 4050 W</code>.<br>\n• Harcanan güçler: <code>P_6Ω = 1350 W</code>, <code>P_2Ω = 1800 W</code>, <code>P_2ix = +30V · 30A = +900 W</code> (Toplam = 4050 W!)."}]}, {"id": 3, "title": "3. Vize Denemesi (Süperdüğüm & Yüksek Güç Transferi)", "desc": "P5.119 Maksimum Güç, P4.98 Süperpozisyon, ÇY2 Süperdüğüm (5vΔ) ve Problem 2.9 Güç Analizi.", "questions": [{"qnum": "Soru 1 (25 Puan) — Maksimum Güç Transferi (Figure P5.119)", "topic": "1. Konu: Bağımlı Kaynaklı Maksimum Güç Transferi", "stem": "Çalışma Yaprağı 4 (Sayfa 1 Sağ Orta, <strong>Figure P5.119</strong>) devresinde: Solda 100 V kaynak, orta düğümde üç adet 4 Ω direnç (alttaki 4 Ω üzerinde + V_x − ve seri 20 V kaynak), üst köprüde (− +) 4V_x bağımlı gerilim kaynağı ile seri 4 Ω direnç ve çıkışta R_L yükü bulunmaktadır. <strong>R_L'ye maksimum güç transferi için V_Th, R_L (= R_Th) ve P_max değerleri nedir?</strong>", "options": ["A) V_Th = 660 V,  R_L = R_Th = 12 Ω,  P_max = 9075 W", "B) V_Th = 440 V,  R_L = R_Th = 8 Ω,   P_max = 6050 W", "C) V_Th = 660 V,  R_L = R_Th = 6 Ω,   P_max = 18150 W", "D) V_Th = 260 V,  R_L = R_Th = 12 Ω,  P_max = 1408.3 W"], "correct": 0, "solution": "<strong>1) Açık Devre (V_Th = Vₐ):</strong><br>\n• <code>ek 1: V_x = V_m - 20</code> ve üst kol potansiyeli <code>100 + 4V_x = 4V_m + 20</code>.<br>\n• KCL (V_m): <code>(V_m - 100)/4 + (V_m - 20)/4 + (V_m - Vₐ)/4 = 0 ⟹ 3 V_m - Vₐ = 120</code>.<br>\n• KCL (Vₐ): <code>(Vₐ - V_m)/4 + (Vₐ - 4V_m - 20)/4 = 0 ⟹ -5 V_m + 2 Vₐ = 20</code>.<br>\n• Çözüm: <code>V_m = 260 V</code> ve <code>V_Th = Vₐ = 660 V</code>!<br><br>\n<strong>2) Kısa Devre (Vₐ = 0 V ⟹ I_sc):</strong><br>\n• <code>3 V_m = 120 ⟹ V_m = 40 V</code> ve <code>V_x = 20 V</code>.<br>\n• <code>I_sc = 40/4 + (100 + 4·20)/4 = 10 + 45 = 55 A</code>.<br><br>\n<strong>3) R_Th ve P_max:</strong><br>\n• <code>R_L = R_Th = 660 / 55 = 12 Ω</code> ve <code>P_max = 660² / (4 · 12) = 9075 W</code>."}, {"qnum": "Soru 2 (25 Puan) — Bağımlı Kaynaklı Süperpozisyon (Figure P4.98)", "topic": "2. Konu: Süperpozisyon Yöntemi", "stem": "Çalışma Yaprağı 4 (Sayfa 2, <strong>Figure P4.98</strong>) devresinde: Solda 90 V kaynak, sağda 40 V kaynak, üstte 1 kΩ (+ v_b −) ve orta dikey kolda (+ −) 2.5v_b bağımlı gerilim kaynağı bulunmaktadır. <strong>Süperpozisyon yöntemiyle 90 V kaynağın tek başına oluşturduğu i₁ akımı, 40 V kaynağın oluşturduğu i₂ akımı ve toplam i akımı kaç mA'dir?</strong>", "options": ["A) i₁ = 135/19 mA (7.105 mA),  i₂ = 340/19 mA (17.895 mA),  Toplam i = 25 mA", "B) i₁ = 10 mA,  i₂ = 15 mA,  Toplam i = 25 mA", "C) i₁ = 135/19 mA (7.105 mA),  i₂ = -340/19 mA (-17.895 mA),  Toplam i = -10.79 mA", "D) i₁ = 12 mA,  i₂ = 8 mA,   Toplam i = 20 mA"], "correct": 0, "solution": "<strong>1. Adım (Sadece 90 V Açık, 40 V Kısa Devre):</strong><br>\n• Sağ üst düğüm KCL: <code>(V₂' - 90)/1 + [V₂' - 2.5(90 - V₂')]/4 + V₂'/2 = 0 ⟹ V₂' = 1170/19 V</code>.<br>\n• Orta kol akımı: <code>i₁ = (90 - V_c')/2 + (V₂' - V_c')/4 = 135/19 mA ≈ 7.105 mA</code>.<br><br>\n<strong>2. Adım (Sadece 40 V Açık, 90 V Kısa Devre):</strong><br>\n• Sağ üst düğüm KCL: <code>V₂''/1 + (V₂'' + 2.5 V₂'')/4 + (V₂'' - 40)/2 = 0 ⟹ V₂'' = 160/19 V</code>.<br>\n• Orta kol akımı: <code>i₂ = (0 - V_c'')/2 + (V₂'' - V_c'')/4 = 340/19 mA ≈ 17.895 mA</code>.<br><br>\n<strong>3. Adım (Toplam):</strong><br>\n• <code>i = i₁ + i₂ = 135/19 + 340/19 = 475/19 = 25 mA</code> (Tam sayı!)."}, {"qnum": "Soru 3 (25 Puan) — Bağımlı Kaynaklı Süperdüğüm (ÇY2 Sayfa 2, 5. Devre)", "topic": "3. Konu: Düğüm Gerilimleri (Süperdüğüm)", "stem": "Çalışma Yaprağı 2 (Sayfa 2, 5. Devre): Solda 15 V kaynak, paralel 33 Ω, üstte 10 Ω, 1. düğümde 2 Ω (+ vΔ −), 1. ve 2. düğüm arasında (+ −) 5vΔ bağımlı gerilim kaynağı ve 2. düğümde paralel 20 Ω ∥ 40 Ω (+ v_o −) dirençler bulunmaktadır. <strong>Süperdüğüm analiziyle vΔ ve v_o gerilimleri kaçtır?</strong>", "options": ["A) vΔ = 5 V  ve  v_o = -20 V", "B) vΔ = 3 V  ve  v_o = -12 V", "C) vΔ = 5 V  ve  v_o = +20 V", "D) vΔ = 6 V  ve  v_o = -24 V"], "correct": 0, "solution": "<strong>1) Süperdüğüm İç Denklemi:</strong><br>\n• 1. düğüm (vΔ) ile 2. düğüm (v_o) arasında (+ −) 5vΔ kaynağı olduğu için:<br>\n  <code>vΔ - v_o = 5 vΔ ⟹ v_o = -4 vΔ</code>.<br><br>\n<strong>2) Süperdüğüm Dış KCL Denklemi:</strong><br>\n• <code>(vΔ - 15)/10 + vΔ/2 + v_o/20 + v_o/40 = 0</code> (×40 ile çarpalım)<br>\n• <code>4(vΔ - 15) + 20 vΔ + 2 v_o + v_o = 0 ⟹ 24 vΔ + 3 v_o = 60</code>.<br>\n• <code>v_o = -4 vΔ</code> yerine koy: <code>24 vΔ - 12 vΔ = 60 ⟹ 12 vΔ = 60 ⟹ vΔ = 5 V</code> ve <code>v_o = -20 V</code>."}, {"qnum": "Soru 4 (25 Puan) — Bölüm 1-2-3 Bağımlı Kaynaklı Güç Analizi (Problem 2.9)", "topic": "4. Konu: KCL, KVL ve Güç Hesapları", "stem": "Çalışma Yaprağı 1 (Sayfa 7 En Alt, <strong>Problem 2.9</strong>) devresinde: Solda 5 V kaynak, 54 kΩ (i₁ →) ve (− +) 1 V kaynak; ortada 6 kΩ direnç; sağ kolda sola bakan 30i₁ bağımlı akım kaynağı (+ v −), 1.8 kΩ direnç ve 8 V kaynak vardır. <strong>Devredeki i₁ akımı (μA cinsinden) ve bağımlı kaynağın üzerindeki v gerilimi kaçtır?</strong>", "options": ["A) i₁ = 25 μA (0.025 mA)  ve  v = -2.0 V", "B) i₁ = 50 μA (0.050 mA)  ve  v = +2.0 V", "C) i₁ = 25 μA (0.025 mA)  ve  v = +4.65 V", "D) i₁ = 30 μA (0.030 mA)  ve  v = -1.35 V"], "correct": 0, "solution": "<strong>1) Orta Düğüm KCL:</strong><br>\n• Orta düğüme soldan <code>i₁</code>, sağdan <code>30 i₁</code> girer; toplam <code>31 i₁</code> akımı 6 kΩ dirençten toprağa akar:<br>\n  <code>V_c = 6 kΩ · 31 i₁ = 186 i₁</code> (kΩ ve mA).<br>\n• Sol kolda: <code>5 - 54 i₁ + 1 = V_c ⟹ 6 - 54 i₁ = 186 i₁ ⟹ 240 i₁ = 6 ⟹ i₁ = 0.025 mA = 25 μA</code>!<br><br>\n<strong>2) v Gerilimi:</strong><br>\n• <code>V_c = 186 · 0.025 = 4.65 V</code>.<br>\n• Sağ koldan sola <code>30 i₁ = 0.75 mA</code> aktığı için 30i₁ kaynağının sağ (−) ucu: <code>V_sağ = 8 - 1.8 · 0.75 = 6.65 V</code>.<br>\n• <code>v = V_c - V_sağ = 4.65 - 6.65 = -2.0 V</code>."}]}, {"id": 4, "title": "4. Vize Denemesi (İç Yük Direnci & 3 Bağımlı Kaynaklı Devre)", "desc": "P5.117 İç Yük Maksimum Güç, P4.59 Kaynak Dönüşümü, P4.42 Çevre Akımları ve P2.36 Güç Sorusu.", "questions": [{"qnum": "Soru 1 (25 Puan) — Maksimum Güç Transferi (Figure P5.117)", "topic": "1. Konu: Bağımlı Kaynaklı Maksimum Güç Transferi", "stem": "Çalışma Yaprağı 4 (Sayfa 1 Sağ Alt, <strong>Figure P5.117</strong>) devresinde: Solda 12 V kaynak ve 4 kΩ direnç, altta 6 kΩ (I_x ↓) ve paralel 2 mA (↑) kaynak, sağda 4 kΩ üzerinden üst düğüme giren 2I_x (↑) bağımlı akım kaynağı bulunmaktadır. <strong>Üst ve alt iç düğümler arasındaki R_L direncine maksimum güç transferi için V_Th, R_L (= R_Th) ve P_max değerleri nedir?</strong>", "options": ["A) V_Th = 16 V,  R_L = R_Th = 2 kΩ,  P_max = 32 mW", "B) V_Th = 28 V,  R_L = R_Th = 4 kΩ,  P_max = 49 mW", "C) V_Th = 12 V,  R_L = R_Th = 6 kΩ,  P_max = 6 mW", "D) V_Th = 16 V,  R_L = R_Th = 4 kΩ,  P_max = 16 mW"], "correct": 0, "solution": "<strong>1) Açık Devre (R_L Söküldü ⟹ V_Th = V_A - V_B):</strong><br>\n• Alt düğüm B'de 2 mA doğrudan 6 kΩ'dan akar: <code>I_x = 2 mA</code> ve <code>V_B = 12 V</code>.<br>\n• Üst düğüm A'da sağdan gelen <code>2 I_x = 4 mA</code> sol 4 kΩ'dan 12 V'a gider: <code>(V_A - 12)/4k = 4 mA ⟹ V_A = 28 V</code>.<br>\n• <code>V_Th = V_A - V_B = 28 - 12 = 16 V</code>.<br><br>\n<strong>2) Kısa Devre (V_A = V_B = V):</strong><br>\n• <code>(V - 12)/4 + V/6 - 2 - 2(V/6) = 0 ⟹ V = 60 V</code> ve <code>I_x = 10 mA</code>.<br>\n• <code>I_sc = 2(10) - (60 - 12)/4 = 20 - 12 = 8 mA</code>.<br><br>\n<strong>3) R_Th ve P_max:</strong><br>\n• <code>R_L = R_Th = 16 V / 8 mA = 2 kΩ</code> ve <code>P_max = 16² / (4 · 2k) = 32 mW</code>."}, {"qnum": "Soru 2 (25 Puan) — Kaynak Dönüşümü ile Merdiven İndirgeme (Figure P4.59)", "topic": "2. Konu: Kaynak Dönüşümü Yöntemi", "stem": "Çalışma Yaprağı 3 (Sayfa 2, <strong>Figure P4.59</strong>) devresinde: Soldan sağa 5 kΩ ∥ 8 mA (↑), seri 10 kΩ ve (− +) 35 V, paralel 30 kΩ, seri 15 kΩ ve en sağda 25 kΩ (+ v_o −) paralel 1 mA (↓) bulunmaktadır. <strong>Ardışık kaynak dönüşümleriyle en sağdaki v_o gerilimi kaç V bulunur?</strong>", "options": ["A) v_o = 12.5 V", "B) v_o = 25.0 V", "C) v_o = 15.0 V", "D) v_o = 10.0 V"], "correct": 0, "solution": "<strong>Adım Adım Kaynak Dönüşümü:</strong><br>\n1) <code>8 mA (↑) ∥ 5 kΩ ⟹ 40 V (+ üstte) + 5 kΩ</code>.<br>\n2) <code>10 kΩ</code> ve <code>(- +) 35 V</code> ile seri toplanır: <code>75 V (+ üstte) + 15 kΩ</code>.<br>\n3) Akım kaynağına çevrilir: <code>75 V / 15 kΩ = 5 mA (↑) ∥ 15 kΩ</code>.<br>\n4) <code>30 kΩ</code> ile paralel: <code>15 ∥ 30 = 10 kΩ</code> ⟹ <code>5 mA ∥ 10 kΩ = 50 V + 10 kΩ</code>.<br>\n5) <code>15 kΩ</code> ile seri: <code>50 V + 25 kΩ ⟹ 2 mA (↑) ∥ 25 kΩ</code>.<br>\n6) En sağda: <code>(2 mA - 1 mA) · (25 kΩ ∥ 25 kΩ) = 1 mA · 12.5 kΩ = 12.5 V</code>."}, {"qnum": "Soru 3 (25 Puan) — Çevre Akımları Analizi (Figure P4.42)", "topic": "3. Konu: Çevre Akımları Yöntemi (Ç.A.Y.)", "stem": "Çalışma Yaprağı 3 (Sayfa 1, <strong>Figure P4.42</strong>) devresinde: Sol alt gözde 30 V (+ üstte), 3 Ω, 20 Ω (iΔ ↓), 7 Ω; sağ alt gözde 20 Ω, 5 Ω, 30 V (− üstte, + altta), 2 Ω; üst gözde ise (+ −) 53iΔ bağımlı gerilim kaynağı vardır. <strong>Çevre akımları yöntemiyle iΔ akımı ve çevre akımları I₁, I₂, I₃ kaçtır?</strong>", "options": ["A) I₁ = 52 A,  I₂ = 60 A,  I₃ = 110 A  ve  iΔ = -8 A", "B) I₁ = 6 A,   I₂ = 5 A,   I₃ = 10 A   ve  iΔ = +1 A", "C) I₁ = 52 A,  I₂ = 60 A,  I₃ = 110 A  ve  iΔ = +8 A", "D) I₁ = 30 A,  I₂ = 38 A,  I₃ = 70 A   ve  iΔ = -8 A"], "correct": 0, "solution": "<strong>1) Yardımcı Denklem:</strong> <code>ek 1: iΔ = I₁ - I₂</code>.<br><br>\n<strong>2) 3 Gözde KVL:</strong><br>\n• 1. Göz (Sol Alt): <code>-30 + 3(I₁ - I₃) + 20(I₁ - I₂) + 7 I₁ = 0 ⟹ 30 I₁ - 20 I₂ - 3 I₃ = 30</code>.<br>\n• 2. Göz (Sağ Alt): <code>20(I₂ - I₁) + 5(I₂ - I₃) - 30 + 2 I₂ = 0 ⟹ -20 I₁ + 27 I₂ - 5 I₃ = 30</code>.<br>\n• 3. Göz (Üst): <code>53(I₁ - I₂) + 5(I₃ - I₂) + 3(I₃ - I₁) = 0 ⟹ 50 I₁ - 58 I₂ + 8 I₃ = 0</code>.<br>\n• Çözüm: <code>I₁ = 52 A, I₂ = 60 A, I₃ = 110 A</code> ve <code>iΔ = 52 - 60 = -8 A</code>."}, {"qnum": "Soru 4 (25 Puan) — 3 Bağımlı Kaynaklı Devre Analizi (Problem 2.36)", "topic": "4. Konu: KCL, KVL ve Bağımlı Kaynaklar", "stem": "Çalışma Yaprağı 1 (Sayfa 9, <strong>Figure P2.36</strong>) devresinde: Solda 50 V kaynak, üstte (− +) 20iσ, dikey kolda 18 Ω (iΔ ↓); ortada üstte (+ −) 5iσ, dikey kolda 40 Ω (+ v_o −, iσ ↓); sağda (+ −) 8iΔ ve 20 V kaynak bulunmaktadır. <strong>Devredeki iσ, iΔ akımları ve v_o gerilimi kaçtır?</strong>", "options": ["A) iσ = 2 A,  iΔ = 5 A,  v_o = 80 V", "B) iσ = 1 A,  iΔ = 2.5 A, v_o = 40 V", "C) iσ = 4 A,  iΔ = 10 A, v_o = 160 V", "D) iσ = 2 A,  iΔ = 4 A,  v_o = 80 V"], "correct": 0, "solution": "<strong>1) Orta Gözde KVL:</strong><br>\n• <code>-18 iΔ + 5 iσ + 40 iσ = 0 ⟹ 18 iΔ = 45 iσ ⟹ iΔ = 2.5 iσ</code>.<br><br>\n<strong>2) Sol Gözde KVL:</strong><br>\n• <code>-50 - 20 iσ + 18 iΔ = 0</code>.<br>\n• <code>18 iΔ = 45 iσ</code> yerine koy: <code>-50 - 20 iσ + 45 iσ = 0 ⟹ 25 iσ = 50 ⟹ iσ = 2 A</code>!<br>\n• Buradan: <code>iΔ = 2.5 · 2 = 5 A</code> ve <code>v_o = 40 · 2 = 80 V</code>."}]}, {"id": 5, "title": "5. Vize Denemesi (Test Kaynağı & Sondan Başa Analiz)", "desc": "P4.79 Test Kaynaklı Thévenin, P4.60 Kaynak Dönüşümü, ÇY2-S2-D3 Düğüm Analizi ve P2.37 Merdiven Güç Analizi.", "questions": [{"qnum": "Soru 1 (25 Puan) — Bağımsız Kaynaksız Devrede Thévenin Direnci (Figure P4.79)", "topic": "1. Konu: Test Kaynağı Yöntemi ile Thévenin", "stem": "Çalışma Yaprağı 3 (Sayfa 3, <strong>Figure P4.79</strong>) devresinde hiç bağımsız kaynak yoktur; yalnızca 100 Ω, 200 Ω, 150 Ω (iΔ →), 50 Ω dirençler ve (+ −) 250iΔ bağımlı gerilim kaynağı vardır. <strong>a-b uçlarına V_t = 1 V test kaynağı bağlandığında kaynaktan çekilen I_t akımı ve R_Th eşdeğer direnci kaçtır?</strong>", "options": ["A) V_Th = 0 V,  I_t = 65 mA (0.065 A),  R_Th = 200/13 ≈ 15.38 Ω", "B) V_Th = 0 V,  I_t = 50 mA (0.050 A),  R_Th = 20.00 Ω", "C) V_Th = 10 V, I_t = 65 mA (0.065 A),  R_Th = 15.38 Ω", "D) V_Th = 0 V,  I_t = 40 mA (0.040 A),  R_Th = 25.00 Ω"], "correct": 0, "solution": "<strong>1) Bağımsız Kaynak Yoksa:</strong> <code>V_Th = 0 V</code>'tur. a-b uçlarına <code>V_t = 1 V</code> bağlanır.<br><br>\n<strong>2) Düğüm V₁ Analizi:</strong><br>\n• <code>iΔ = (V₁ - 1)/150</code> ve orta düğüm <code>V₂ = 250 iΔ</code>.<br>\n• KCL (V₁): <code>V₁/100 + (V₁ - 250 iΔ)/200 + iΔ = 0 ⟹ (3/200)V₁ = (1/4)iΔ ⟹ 9 V₁ = V₁ - 1 ⟹ V₁ = -0.125 V</code>.<br>\n• Buradan: <code>iΔ = -7.5 mA</code> ve <code>V₂ = -1.875 V</code>.<br><br>\n<strong>3) Test Akımı I_t ve R_Th:</strong><br>\n• <code>I_t = -iΔ + (1 - V₂)/50 = 7.5 mA + 57.5 mA = 65 mA (0.065 A)</code>.<br>\n• <code>R_Th = 1 V / 0.065 A = 200/13 ≈ 15.38 Ω</code>."}, {"qnum": "Soru 2 (25 Puan) — Kaynak Dönüşümü (Figure P4.60)", "topic": "2. Konu: Kaynak Dönüşümü Yöntemi", "stem": "Çalışma Yaprağı 3 (Sayfa 2, <strong>Figure P4.60</strong>) devresinde: Soldaki 50 V kaynak ve 10 kΩ dirençten başlayarak sağdaki 15 kΩ yük direncine (i_o ↓) kadar kaynak dönüşümü yapıldığında, <strong>en sağdaki 15 kΩ dirençten geçen i_o akımı kaç mA bulunur?</strong>", "options": ["A) i_o = 0.3 mA (300 μA)", "B) i_o = 0.5 mA (500 μA)", "C) i_o = 0.75 mA (750 μA)", "D) i_o = 0.25 mA (250 μA)"], "correct": 0, "solution": "<strong>Adım Adım İndirgeme:</strong><br>\n• <code>50V + 10kΩ ⟹ 5mA ∥ 10kΩ</code>; 15kΩ ile paralel: <code>6 kΩ</code>.<br>\n• <code>5mA ∥ 6kΩ ⟹ 30V + 6kΩ</code>; üst 3kΩ ve alt 6kΩ ile seri: <code>30V + 15kΩ</code>.<br>\n• <code>30V + 15kΩ ⟹ 2mA (↑) ∥ 15kΩ</code>; 1mA (↓) ile birleşince: <code>1mA (↑) ∥ 15kΩ</code>.<br>\n• <code>1mA ∥ 15kΩ ⟹ 15V + 15kΩ</code>; 5kΩ ile seri: <code>15V + 20kΩ ⟹ 0.75mA (↑) ∥ 20kΩ</code>.<br>\n• Sağdaki 20kΩ ile paralel: <code>10 kΩ</code>. Akım bölme ile: <code>i_o = 0.75 mA · [10 / (10 + 15)] = 0.3 mA</code>."}, {"qnum": "Soru 3 (25 Puan) — Düğüm Gerilimleri Analizi (ÇY2 Sayfa 2, 3. Devre)", "topic": "3. Konu: Düğüm Gerilimleri Yöntemi", "stem": "Çalışma Yaprağı 2 (Sayfa 2, 3. Devre): Solda 50 V kaynak, seri 500 Ω, 1. düğümde 1 kΩ (+ vΔ −), iki düğüm arasında 2 kΩ, 2. düğümde yukarı bakan vΔ/750 bağımlı akım kaynağı ve paralel 200 Ω (+ v_o −) bulunmaktadır. <strong>Düğüm gerilimleri yöntemiyle vΔ ve v_o gerilimleri kaçtır?</strong>", "options": ["A) vΔ = 30 V  ve  v_o = 10 V", "B) vΔ = 20 V  ve  v_o = 10 V", "C) vΔ = 30 V  ve  v_o = 15 V", "D) vΔ = 40 V  ve  v_o = 20 V"], "correct": 0, "solution": "<strong>1) 1. Düğüm (vΔ) KCL:</strong><br>\n• <code>(vΔ - 50)/500 + vΔ/1000 + (vΔ - v_o)/2000 = 0 ⟹ 7 vΔ - v_o = 200</code>.<br><br>\n<strong>2) 2. Düğüm (v_o) KCL:</strong><br>\n• <code>(v_o - vΔ)/2000 - vΔ/750 + v_o/200 = 0 ⟹ -11 vΔ + 33 v_o = 0 ⟹ vΔ = 3 v_o</code>.<br><br>\n<strong>3) Çözüm:</strong><br>\n• <code>7(3 v_o) - v_o = 200 ⟹ 20 v_o = 200 ⟹ v_o = 10 V</code> ve <code>vΔ = 30 V</code>."}, {"qnum": "Soru 4 (25 Puan) — Sağdan Sola Bağımlı Kaynak Analizi (Problem 2.37)", "topic": "4. Konu: Bölüm 1-2-3 Bağımlı Kaynaklı Devre Analizi", "stem": "Çalışma Yaprağı 1 (Sayfa 10, <strong>Figure P2.37</strong>) devresinde en sağdaki 10 Ω direnç üzerindeki gerilim <strong>v_o = 5 V</strong> olarak verilmiştir. Sağdan sola doğru 40i₂ ve 25i₁ bağımlı akım kaynakları takip edilerek hesaplandığında <strong>orta kısımdaki v₁ gerilimi ve en soldaki v_g kaynak gerilimi kaç V bulunur?</strong>", "options": ["A) v₁ = -1.25 V  ve  v_g = 1.0 V", "B) v₁ = +1.25 V  ve  v_g = 2.0 V", "C) v₁ = -2.50 V  ve  v_g = 1.0 V", "D) v₁ = -1.25 V  ve  v_g = 5.0 V"], "correct": 0, "solution": "<strong>1) Sağ Göz:</strong><br>\n• <code>v_o = 5 V</code> ise 40 Ω ∥ 10 Ω üzerinden aşağı inen akım: <code>5/10 + 5/40 = 0.625 A</code>.<br>\n• <code>-40 i₂ = 0.625 ⟹ i₂ = -1/64 A (-15.625 mA)</code>.<br><br>\n<strong>2) Orta Göz:</strong><br>\n• <code>v₁ = 80 Ω · i₂ = 80 · (-1/64) = -1.25 V</code>.<br>\n• 20 Ω ∥ 80 Ω (16 Ω) üzerinden geçen akım: <code>-1.25 / 16 = -5/64 A</code>.<br>\n• <code>-25 i₁ = -5/64 ⟹ i₁ = 1/320 A (3.125 mA)</code>.<br><br>\n<strong>3) Sol Göz:</strong><br>\n• <code>v_g = (60 + 260 Ω) · i₁ = 320 · (1/320) = 1.0 V</code>."}]}];
+
+let currentExamIdx = 0;
+let currentMode = 'study'; // default open solutions so zero-knowledge student sees everything immediately, or can switch
+let userAnswers = {};
+
+function updatePowerSim() {
+  const V = parseFloat(document.getElementById('simV').value) || 0;
+  const I = parseFloat(document.getElementById('simI').value) || 0;
+  const dir = document.getElementById('simDir').value;
+  const signFactor = (dir === 'in_plus') ? 1 : -1;
+  const P = signFactor * V * I;
+  const formulaStr = (dir === 'in_plus')
+    ? `P = + (V · I) = + (${V}) · (${I}) = ${P.toFixed(2)} W`
+    : `P = - (V · I) = - (${V}) · (${I}) = ${P.toFixed(2)} W`;
+
+  let statusHtml = '';
+  if (P > 0) {
+    statusHtml = `<span class="math-ok">✅ SONUÇ: P = +${P.toFixed(2)} W > 0  ⟹  ELEMAN GÜÇ ALIYOR (HARCIYOR / ABSORBING)!</span>`;
+  } else if (P < 0) {
+    statusHtml = `<span class="math-pink">⚡ SONUÇ: P = ${P.toFixed(2)} W < 0  ⟹  ELEMAN ${Math.abs(P).toFixed(2)} W GÜÇ VERİYOR (ÜRETİYOR / SUPPLYING)!</span>`;
+  } else {
+    statusHtml = `<span class="math-hl">⚪ SONUÇ: P = 0 W (Güç alışverişi yok)</span>`;
+  }
+
+  document.getElementById('powerSimOutput').innerHTML = `
+    <div><strong>1) Giriş Yönü Kuralı:</strong> ${dir === 'in_plus' ? 'Akım (+) uçtan GİRİYOR (Pasif İşaretleme ⟹ Formül +V·I)' : 'Akım (+) uçtan ÇIKIYOR (Aktif İşaretleme ⟹ Formül -V·I)'}</div>
+    <div><strong>2) Hesaplama:</strong> <span class="math-hl">${formulaStr}</span></div>
+    <div style="margin-top:6px;">${statusHtml}</div>
+  `;
+}
+
+function calcP487() {
+  const Vs = parseFloat(document.getElementById('p487_Vs').value) || 110;
+  const R1 = parseFloat(document.getElementById('p487_R1').value) || 15;
+  const R2 = parseFloat(document.getElementById('p487_R2').value) || 5;
+  const R3 = parseFloat(document.getElementById('p487_R3').value) || 8;
+
+  // Open circuit:
+  // KCL1: (V1 - Vs)/R1 - 0.1*(Vs - V1) + (V1 - V2)/R2 = 0
+  // => V1 * (1/R1 + 0.1 + 1/R2) - V2 * (1/R2) = Vs * (1/R1 + 0.1)
+  const a11 = (1/R1) + 0.1 + (1/R2);
+  const a12 = -(1/R2);
+  const b1 = Vs * ((1/R1) + 0.1);
+
+  // KCL2: (V2 - V1)/R2 + (V2 + 3*(V1 - V2)/R2)/R3 = 0
+  // => V1 * (-1/R2 + 3/(R2*R3)) + V2 * (1/R2 + 1/R3 - 3/(R2*R3)) = 0
+  const a21 = -(1/R2) + 3/(R2*R3);
+  const a22 = (1/R2) + (1/R3) - 3/(R2*R3);
+  const det = a11 * a22 - a12 * a21;
+  const V1_oc = (b1 * a22) / det;
+  const Vth = (-a21 * b1) / det;
+
+  // Short circuit (V2 = 0):
+  const V1_sc = b1 / a11;
+  const id_sc = V1_sc / R2;
+  const I_branch = (3 * id_sc) / R3;
+  const Isc = id_sc - I_branch;
+  const Rth = Vth / Isc;
+  const Pmax = (Vth * Vth) / (4 * Rth);
+
+  document.getElementById('p487_Out').innerHTML = `
+    <div>• <strong>Açık Devre (R_o Söküldü):</strong> V₁ = ${V1_oc.toFixed(3)} V  ve  <span class="math-hl">V_Th = ${Vth.toFixed(3)} V</span></div>
+    <div>• <strong>Kısa Devre (a-b Düz Tel, V₂ = 0):</strong> V₁ = ${V1_sc.toFixed(3)} V,  iΔ = ${id_sc.toFixed(3)} A  ⟹  <span class="math-ok">I_sc = ${Isc.toFixed(3)} A</span></div>
+    <div>• <strong>Thévenin ve Yük Direnci:</strong> <span class="math-hl">R_o = R_Th = V_Th / I_sc = ${Rth.toFixed(3)} Ω</span></div>
+    <div>• <strong>Maksimum Güç Transferi:</strong> <span class="math-pink">P_max = V_Th² / (4 · R_Th) = ${Pmax.toFixed(2)} W</span></div>
+  `;
+}
+
+function renderExamTabs() {
+  const tabsEl = document.getElementById('examTabs');
+  tabsEl.innerHTML = EXAMS_DATA.map((ex, idx) => `
+    <button class="exam-tab ${idx === currentExamIdx ? 'active' : ''}" onclick="selectExam(${idx})">
+      📝 ${ex.title}
+    </button>
+  `).join('');
+}
+
+function selectExam(idx) {
+  currentExamIdx = idx;
+  renderExamTabs();
+  renderCurrentExam();
+}
+
+function setExamMode(mode) {
+  currentMode = mode;
+  renderCurrentExam();
+}
+
+function answerQuestion(qIdx, optIdx) {
+  const key = `${currentExamIdx}_${qIdx}`;
+  userAnswers[key] = optIdx;
+  renderCurrentExam();
+}
+
+function toggleSol(qIdx) {
+  const el = document.getElementById(`sol_${qIdx}`);
+  if (el) {
+    el.style.display = (el.style.display === 'none') ? 'block' : 'none';
+  }
+}
+
+function renderCurrentExam() {
+  const ex = EXAMS_DATA[currentExamIdx];
+  let correctCount = 0;
+  ex.questions.forEach((q, qIdx) => {
+    if (userAnswers[`${currentExamIdx}_${qIdx}`] === q.correct) correctCount++;
+  });
+  document.getElementById('scoreDisplay').textContent = `Skor: ${correctCount} / 4 Doğru (${correctCount * 25} / 100 Puan)`;
+
+  const container = document.getElementById('examContainer');
+  container.innerHTML = `
+    <div class="card" style="background:#f8fafc; border-color:#94a3b8; margin-bottom:18px;">
+      <h3 style="margin-bottom:4px;">📌 ${ex.title}</h3>
+      <p style="font-size:0.93rem; color:#475569;">${ex.desc}</p>
+    </div>
+    ${ex.questions.map((q, qIdx) => {
+      const key = `${currentExamIdx}_${qIdx}`;
+      const chosen = userAnswers[key];
+      const showSol = (currentMode === 'study') || (chosen !== undefined);
+      return `
+        <div class="q-card">
+          <div class="q-head">
+            <span class="step-badge rose" style="font-size:0.84rem; padding:4px 10px;">${q.qnum}</span>
+            <span style="font-size:0.82rem; font-weight:800; color:#4f46e5;">${q.topic}</span>
+          </div>
+          <p style="font-size:1rem; margin-bottom:12px;">${q.stem}</p>
+          <div class="opt-grid">
+            ${q.options.map((opt, oIdx) => {
+              let cls = 'opt-btn';
+              if (chosen !== undefined) {
+                if (oIdx === q.correct) cls += ' correct';
+                else if (oIdx === chosen) cls += ' wrong';
+              } else if (currentMode === 'study' && oIdx === q.correct) {
+                cls += ' correct';
+              }
+              return `<button class="${cls}" onclick="answerQuestion(${qIdx}, ${oIdx})">${opt}</button>`;
+            }).join('')}
+          </div>
+          <button class="sol-toggle-btn" onclick="toggleSol(${qIdx})">
+            🔎 Adım Adım Tam Çözümü Göster / Gizle
+          </button>
+          <div class="sol-box" id="sol_${qIdx}" style="display:${showSol ? 'block' : 'none'};">
+            <div style="font-weight:800; color:#059669; margin-bottom:8px;">✅ Doğru Cevap: ${q.options[q.correct]}</div>
+            <div style="font-size:0.94rem; line-height:1.7;">${q.solution}</div>
+          </div>
+        </div>
+      `;
+    }).join('')}
+  `;
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  updatePowerSim();
+  calcP487();
+  renderExamTabs();
+  renderCurrentExam();
+});
+</script>
+</body>
+</html>
