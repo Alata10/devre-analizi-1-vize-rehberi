@@ -188,22 +188,62 @@
     addEventListener('scroll', upd, { passive: true }); upd();
   }
 
-  /* ---------------- search ---------------- */
-  function setupSearch() {
-    const input = $('#search'); if (!input) return;
+  /* ---------------- search & level filter & topic order ---------------- */
+  let currentLevelFilter = 'all';
+  function applyFilters() {
+    const input = $('#search');
     const norm = s => s.toLocaleLowerCase('tr').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    input.addEventListener('input', () => {
-      const q = norm(input.value.trim());
-      $$('.problem').forEach(p => p.classList.toggle('is-hidden', q && !norm(p.dataset.search).includes(q)));
-      $$('.side-link[data-pid]').forEach(a => a.hidden = q && !norm(a.dataset.search || '').includes(q));
+    const q = input ? norm(input.value.trim()) : '';
+    $$('.problem').forEach(p => {
+      const matchQ = !q || norm(p.dataset.search).includes(q);
+      const matchLvl = currentLevelFilter === 'all' || p.dataset.level === currentLevelFilter;
+      p.classList.toggle('is-hidden', !(matchQ && matchLvl));
     });
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') { const f = $$('.problem').find(p => !p.classList.contains('is-hidden')); if (f) f.scrollIntoView({ behavior: 'smooth' }); }
-      if (e.key === 'Escape') { input.value = ''; input.dispatchEvent(new Event('input')); input.blur(); }
+    $$('[data-tier-banner]').forEach(b => {
+      b.hidden = currentLevelFilter !== 'all' && b.dataset.tierBanner !== currentLevelFilter;
     });
-    addEventListener('keydown', e => {
-      if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); input.focus(); }
+    $$('.side-link[data-pid]').forEach(a => {
+      const matchQ = !q || norm(a.dataset.search || '').includes(q);
+      const matchLvl = currentLevelFilter === 'all' || a.dataset.level === currentLevelFilter;
+      a.hidden = !(matchQ && matchLvl);
     });
+  }
+
+  function setupSearch() {
+    const input = $('#search');
+    if (input) {
+      input.addEventListener('input', applyFilters);
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { const f = $$('.problem').find(p => !p.classList.contains('is-hidden')); if (f) f.scrollIntoView({ behavior: 'smooth' }); }
+        if (e.key === 'Escape') { input.value = ''; applyFilters(); input.blur(); }
+      });
+      addEventListener('keydown', e => {
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); input.focus(); }
+      });
+    }
+    $$('#levelFilter [data-filter-level]').forEach(btn => btn.addEventListener('click', () => {
+      currentLevelFilter = btn.dataset.filterLevel;
+      $$('#levelFilter [data-filter-level]').forEach(b => b.classList.toggle('is-active', b === btn));
+      applyFilters();
+    }));
+    $$('#orderToggle [data-order]').forEach(btn => btn.addEventListener('click', () => {
+      const mode = btn.dataset.order;
+      $$('#orderToggle [data-order]').forEach(b => b.classList.toggle('is-active', b === btn));
+      const container = $('#topicsContainer');
+      const sideContainer = $('#sidebarTopics');
+      const key = mode === 'exam' ? 'examOrder' : 'stageOrder';
+      if (container) {
+        const secs = $$('.topic-section', container).sort((a, b) => (+a.dataset[key]) - (+b.dataset[key]));
+        secs.forEach(s => container.appendChild(s));
+        let num = 1;
+        $$('.problem .pnum', container).forEach(el => { el.textContent = `${num++}.`; });
+      }
+      if (sideContainer) {
+        const grps = $$('[data-side-topic]', sideContainer).sort((a, b) => (+a.dataset[key]) - (+b.dataset[key]));
+        grps.forEach(g => sideContainer.appendChild(g));
+      }
+      toast(mode === 'exam' ? 'Tahtadaki soru sırasına (Soru 1 → 4) geçildi.' : 'Kolaydan zora önerilen öğrenme sırasına geçildi.');
+    }));
   }
 
   /* ---------------- mock exams ---------------- */

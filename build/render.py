@@ -2,12 +2,12 @@
 """HTML parçalarını üreten ortak fonksiyonlar (site.py ve preview.py kullanır)."""
 import html as _html
 
-LEVELS = {1: "Temel", 2: "Orta", 3: "Zor"}
+LEVELS = {1: "1. Aşama · Kolay (Temel)", 2: "2. Aşama · Orta", 3: "3. Aşama · Zor"}
 TOPICS = {
-    1: ("Soru 1", "Maksimum güç transferi"),
-    2: ("Soru 2", "Kaynak dönüşümü & süperpozisyon"),
-    3: ("Soru 3", "Düğüm gerilimleri & çevre akımları"),
-    4: ("Soru 4", "Güç hesabı & güç dengesi"),
+    1: ("Sınav Sorusu 1", "Maksimum güç transferi (Thévenin / Norton)"),
+    2: ("Sınav Sorusu 2", "Kaynak dönüşümü & süperpozisyon"),
+    3: ("Sınav Sorusu 3", "Düğüm gerilimleri & çevre akımları"),
+    4: ("Sınav Sorusu 4", "Temel yasalar, güç hesabı & güç dengesi"),
 }
 
 
@@ -79,22 +79,27 @@ def render_problem(p, number):
     traps = ""
     if p.get("traps"):
         items = "".join(f"<li>{t}</li>" for t in p["traps"])
-        traps = f'<details class="traps"><summary>Sık yapılan hatalar</summary><ul>{items}</ul></details>'
+        traps = (
+            f'<details class="traps" open>'
+            f'<summary>Bu soruda nelere dikkat etmeli? (Püf noktaları &amp; sık yapılan hatalar)</summary>'
+            f'<ul>{items}</ul></details>'
+        )
 
     view_btns = '<button class="seg-btn is-active" data-view-btn="detail">Detaylı anlatım</button>'
     if exam:
         view_btns += '<button class="seg-btn" data-view-btn="exam">Sınav kağıdı</button>'
     view_btns += '<button class="seg-btn" data-view-btn="step">Adım adım</button>'
 
+    lvl = p.get("level", 2)
     topic_short = TOPICS[p["topic"]][0]
     return f'''
-<article class="problem" id="{esc(pid)}" data-pid="{esc(pid)}" data-topic="{p["topic"]}" data-steps="{n_steps}"
+<article class="problem" id="{esc(pid)}" data-pid="{esc(pid)}" data-topic="{p["topic"]}" data-level="{lvl}" data-steps="{n_steps}"
   data-search="{esc((p["code"] + " " + p["title"] + " " + p.get("source", "")).lower())}">
   <header class="problem-head">
     <div class="problem-meta">
       <span class="pcode">{esc(p["code"])}</span>
       <span class="tag">{topic_short}</span>
-      <span class="tag tag-level" data-level="{p.get("level", 2)}">{level}</span>
+      <span class="tag tag-level" data-level="{lvl}">{level}</span>
       {featured}
       <button class="done-toggle" data-done="{esc(pid)}" aria-pressed="false" title="Tamamlandı olarak işaretle">
         <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7"/></svg><span>Tamamla</span>
